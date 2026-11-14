@@ -1,0 +1,126 @@
+# Dancing with SARs 🛰️
+
+**By Feynman Diagrams · NASA Space Apps Challenge**
+
+An interactive map that shows how NASA-ISRO's **NISAR** radar satellite sees three places in South Florida change over a year:
+
+| Place | Story | What we track |
+|---|---|---|
+| 🟧 **Downtown Miami** | A city that glows and breathes | Smog, night lights, flooding |
+| 🟦 **Miami Beach** | An island under pressure | Flooding, vegetation, night lights |
+| 🟩 **Everglades** | The river of grass | Wet-season flooding, vegetation, fires |
+
+Click an area to fly to it. The side panel then shows information **only for that area**. Tick the boxes at the bottom (Flooding, Deforestation, Fires, Pollution / Smog, Light Pollution) to choose the topics. Drag or play the timeline to step through all 27 NISAR passes from **Nov 2025 to Oct 2026**. Switch between **2D and 3D**, and between the **radar image**, the **"what changed" map** and a **plain map**.
+
+---
+
+## Quick start
+
+Requirements: [Node.js 20+](https://nodejs.org/).
+
+```powershell
+npm install
+copy .env.example .env      # then fill in your credentials (see below)
+npm run dev                 # website on http://localhost:5173, API on :8787
+```
+
+The processed NISAR and Black Marble data are already in `public/data/`, so the site works without downloading anything.
+
+### Credentials (`.env`)
+
+| Variable | Used for | Get it at |
+|---|---|---|
+| `METEOMATICS_USERNAME` / `METEOMATICS_PASSWORD` | Weather and air-quality data | [meteomatics.com](https://www.meteomatics.com/en/api/getting-started/) |
+| `EARTHDATA_USERNAME` / `EARTHDATA_PASSWORD` | Only for re-downloading NISAR data | [urs.earthdata.nasa.gov](https://urs.earthdata.nasa.gov/) |
+
+`.env` is git-ignored. **Never commit it.** The browser never sees these passwords: it only talks to our server (`server/`), which adds them.
+
+### Production
+
+```powershell
+npm run build   # builds the website into dist/
+npm start       # one server: website + /api + /tiles on http://localhost:8787
+```
+
+### Refreshing the data
+
+```powershell
+npm run fetch:nisar    # search ASF, download NISAR browse images (~220 MB, cached in data/raw), analyze
+npm run fetch:lights   # Black Marble night-light values per area (run after fetch:nisar)
+```
+
+---
+
+## How it works
+
+```
+Browser (React + MapLibre + deck.gl)
+   │  /api/series, /api/now ──► server/index.js ──► Meteomatics API   (password stays on the server)
+   │  /tiles/nisar, /tiles/lights ──► server/tiles.js ──► NASA GIBS   (retries + disk cache)
+   └─ /data/*.json (pre-computed by scripts/)
+```
+
+### NISAR radar (the core data)
+1. **Find.** `scripts/fetch-nisar.js` queries the [ASF Search API](https://search.asf.alaska.edu/) (the engine behind ASF Vertex) for NISAR **L2 GCOV** products on ascending **track 47, frames 14 + 15**. One pass covers all three areas and repeats every 12 days.
+2. **Download.** It logs in with NASA Earthdata and downloads each product's geocoded browse image (`_LATLON.png`) and its corner coordinates (`_LATLON.kml`).
+3. **Analyze.** `scripts/analyze-nisar.js` resamples every pass onto one ~200 m grid and classifies each pixel from its colors (red/blue = **HH**, green = **HV**):
+   - **open water**: HH and HV both dark (calm water reflects radar away, like a mirror)
+   - **bright / double bounce**: HH and HV both very bright (buildings, or water under trees)
+   - **vegetation**: everything else (leaves and branches scatter radar, which raises HV)
+
+   It also builds a **change map** for each date compared with the first pass (orange = brighter echo, blue = darker echo).
+4. **Display.** The radar picture on the map is NASA GIBS's `NISAR_L2_Geocoded_Polarimetric_Covariance` daily mosaic at 15.6 m resolution.
+
+> ⚠️ The browse images are display-scaled, not calibrated backscatter. All radar numbers are **relative indicators**, good for spotting patterns over time but not scientific measurements. For research, use the full `.h5` GCOV files.
+
+### Weather and air (Meteomatics API)
+Daily values at each area's center point: rain, soil moisture, evapotranspiration, max temperature, humidity, wind gusts, PM2.5, ozone, NO₂ and the air-quality index (0 = Good to 5 = Extremely Poor). The server only allows the parameters listed in `shared/layers.js`, checks dates and areas, rate-limits requests per visitor, and caches past data on disk.
+
+### Night lights (NASA Black Marble)
+`scripts/fetch-lights.js` averages the Black Marble tiles over each area: the 2012 and 2016 annual composites, plus daily NOAA-20 VIIRS images (VJ146A2) around each NISAR pass. Values are relative brightness from 0 to 100.
+
+---
+
+## What we found (Nov 2025 to Oct 2026)
+
+- **Everglades:** The share that looks like open water stayed near **8%** until August, then jumped to **16-20%** in September and October. That is the wet season: September brought 305 mm of rain, and the soil was saturated. The marsh looked most "vegetated" in the dry season (Feb-May), when burn risk is highest.
+- **Miami Beach:** It got 330 mm of rain in May and 386 mm in September, yet NISAR saw little standing water. The satellite passes around sunrise every 12 days and misses short street floods, and pumps drain them fast. Night brightness rose from **79 (2012) to 91 (2016) to about 99 now**.
+- **Downtown:** It is so bright to radar ("double bounce" off buildings) that the signal saturates. NO₂ from traffic peaked in winter, and ozone peaked in April. It is the brightest place at night.
+
+Full explanations and hypotheses are in the app (`src/data/insights.js`).
+
+### What NISAR could do next
+Measure **land subsidence** with interferometry (GUNW products), track **mangrove biomass** after hurricanes, map **floods through storm clouds**, and monitor **Everglades restoration**.
+
+---
+
+## Data sources
+
+| Resource | How we used it |
+|---|---|
+| [ASF Data Search Vertex](https://search.asf.alaska.edu/) | Finding and listing NISAR GCOV scenes (via the ASF Search API) |
+| [NASA Earthdata Search](https://search.earthdata.nasa.gov/) | Same NISAR collections; Earthdata Login authorizes downloads |
+| [NISAR Data User Guide](https://nisar-docs.asf.alaska.edu/) | Product formats, naming, the radar color recipe, Worldview layers |
+| [NASA GIBS / Worldview](https://nisar-docs.asf.alaska.edu/worldview/) | NISAR radar and Black Marble map tiles |
+| [Meteomatics API](https://www.meteomatics.com/en/api/getting-started/) | Weather and air quality |
+| [NASA Black Marble](https://www.earthdata.nasa.gov/data/projects/black-marble) | Night lights / light pollution |
+| [Intro to Remote Sensing](https://www.earthdata.nasa.gov/learn/earth-observation-data-basics/remote-sensing) | Plain-language explanations |
+| [Intro to SAR](https://www.earthdata.nasa.gov/learn/earth-observation-data-basics/sar) | Polarization and scattering explanations |
+| [NASA ARSET Trainings](https://www.earthdata.nasa.gov/data/projects/arset) | SAR flood and land-cover methods |
+| [NISAR StoryMaps](https://nisar-docs.asf.alaska.edu/storymaps/) | Storytelling inspiration |
+| [NISAR Applications White Papers](https://science.nasa.gov/mission/nisar/societal-benefits/) | Future applications |
+| [CARTO basemap](https://carto.com/basemaps) © OpenStreetMap contributors | Background map |
+
+## Project layout
+
+```
+server/      Express API proxy (Meteomatics) + GIBS tile cache
+scripts/     NISAR download/analysis and Black Marble scripts
+shared/      Area outlines and layer definitions (used by server, scripts and website)
+src/         React website (map, panels, timeline, checkboxes)
+public/data/ Pre-computed NISAR statistics, change maps and night-light values
+```
+
+## License
+
+MIT

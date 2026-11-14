@@ -1,0 +1,1219 @@
+{
+ "generated": "2026-11-14T17:26:48.964Z",
+ "source": {
+  "mission": "NISAR (NASA-ISRO Synthetic Aperture Radar), L-band, 12-day repeat",
+  "product": "L2 GCOV (Geocoded Polarimetric Covariance) browse images, ASF DAAC",
+  "track": 47,
+  "frames": [
+   14,
+   15
+  ],
+  "direction": "ascending",
+  "note": "Values are relative brightness of the GCOV browse images (red/blue = HH, green = HV), not calibrated backscatter."
+ },
+ "studyBounds": {
+  "west": -81.32,
+  "south": 25.1,
+  "east": -80.05,
+  "north": 25.92
+ },
+ "baselineDate": "2025-11-25",
+ "dates": [
+  {
+   "date": "2025-11-25",
+   "time": "2025-11-25T10:44:10Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_006_047_A_014_2005_DHDH_M_20251125T104410_20251125T104441_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_006_047_A_015_4005_DHDH_A_20251125T104440_20251125T104514_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2025-12-07",
+   "time": "2025-12-07T10:44:10Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_007_047_A_014_2005_DHDH_M_20251207T104410_20251207T104441_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_007_047_A_015_4005_DHDH_A_20251207T104440_20251207T104515_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2025-12-19",
+   "time": "2025-12-19T10:44:11Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_008_047_A_014_2005_DHDH_M_20251219T104411_20251219T104442_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_008_047_A_015_4005_DHDH_A_20251219T104441_20251219T104515_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2025-12-31",
+   "time": "2025-12-31T10:44:11Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_009_047_A_014_2005_DHDH_M_20251231T104411_20251231T104442_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_009_047_A_015_4005_DHDH_A_20251231T104441_20251231T104516_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-01-24",
+   "time": "2026-01-24T10:44:12Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_011_047_A_014_2005_DHDH_M_20260124T104412_20260124T104443_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_011_047_A_015_4005_DHDH_A_20260124T104442_20260124T104517_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-02-05",
+   "time": "2026-02-05T10:44:13Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_012_047_A_014_2005_DHDH_M_20260205T104413_20260205T104444_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_012_047_A_015_4005_DHDH_A_20260205T104443_20260205T104518_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-02-17",
+   "time": "2026-02-17T10:44:14Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_013_047_A_014_2005_DHDH_M_20260217T104414_20260217T104445_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_013_047_A_015_4005_DHDH_A_20260217T104444_20260217T104518_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-03-01",
+   "time": "2026-03-01T10:44:14Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_014_047_A_014_2005_DHDH_M_20260301T104414_20260301T104445_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_014_047_A_015_4005_DHDH_A_20260301T104444_20260301T104518_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-03-13",
+   "time": "2026-03-13T10:44:14Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_015_047_A_014_2005_DHDH_M_20260313T104414_20260313T104445_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_015_047_A_015_4005_DHDH_A_20260313T104444_20260313T104519_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-03-25",
+   "time": "2026-03-25T10:44:14Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_016_047_A_014_2005_DHDH_M_20260325T104414_20260325T104445_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_016_047_A_015_4005_DHDH_A_20260325T104444_20260325T104519_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-04-06",
+   "time": "2026-04-06T10:44:14Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_017_047_A_014_2005_DHDH_M_20260406T104414_20260406T104446_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_017_047_A_015_4005_DHDH_A_20260406T104445_20260406T104519_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-04-18",
+   "time": "2026-04-18T10:44:14Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_018_047_A_014_2005_DHDH_M_20260418T104414_20260418T104445_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_018_047_A_015_4005_DHDH_A_20260418T104444_20260418T104519_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-04-30",
+   "time": "2026-04-30T10:44:14Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_019_047_A_014_2005_DHDH_M_20260430T104414_20260430T104445_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_019_047_A_015_4005_DHDH_A_20260430T104444_20260430T104519_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-05-12",
+   "time": "2026-05-12T10:44:13Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_020_047_A_014_2005_DHDH_M_20260512T104413_20260512T104444_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_020_047_A_015_4005_DHDH_A_20260512T104443_20260512T104518_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-05-24",
+   "time": "2026-05-24T10:44:13Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_021_047_A_014_2005_DHDH_M_20260524T104413_20260524T104444_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_021_047_A_015_4005_DHDH_A_20260524T104443_20260524T104517_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-06-05",
+   "time": "2026-06-05T10:44:12Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_022_047_A_014_2005_DHDH_M_20260605T104412_20260605T104443_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_022_047_A_015_4005_DHDH_A_20260605T104442_20260605T104517_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-06-17",
+   "time": "2026-06-17T10:44:11Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_023_047_A_014_2005_DHDH_M_20260617T104411_20260617T104442_P05023_F_F_J_002",
+    "NISAR_L2_PR_GCOV_023_047_A_015_4005_DHDH_A_20260617T104441_20260617T104516_P05023_F_F_J_002"
+   ]
+  },
+  {
+   "date": "2026-06-29",
+   "time": "2026-06-29T10:44:10Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_024_047_A_014_2005_DHDH_M_20260629T104410_20260629T104442_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_024_047_A_015_4005_DHDH_A_20260629T104441_20260629T104515_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-07-11",
+   "time": "2026-07-11T10:44:09Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_025_047_A_014_2005_DHDH_M_20260711T104409_20260711T104441_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_025_047_A_015_4005_DHDH_A_20260711T104440_20260711T104515_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-07-23",
+   "time": "2026-07-23T10:44:09Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_026_047_A_014_2005_DHDH_M_20260723T104409_20260723T104440_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_026_047_A_015_4005_DHDH_A_20260723T104439_20260723T104514_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-08-16",
+   "time": "2026-08-16T10:44:08Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_028_047_A_014_2005_DHDH_M_20260816T104408_20260816T104439_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_028_047_A_015_4005_DHDH_A_20260816T104438_20260816T104513_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-08-28",
+   "time": "2026-08-28T10:44:08Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_029_047_A_014_2005_DHDH_M_20260828T104408_20260828T104439_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_029_047_A_015_4005_DHDH_A_20260828T104438_20260828T104512_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-09-09",
+   "time": "2026-09-09T10:44:07Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_030_047_A_014_2005_DHDH_M_20260909T104407_20260909T104439_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_030_047_A_015_4005_DHDH_A_20260909T104438_20260909T104512_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-09-21",
+   "time": "2026-09-21T10:44:07Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_031_047_A_014_2005_DHDH_M_20260921T104407_20260921T104439_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_031_047_A_015_4005_DHDH_A_20260921T104438_20260921T104512_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-10-03",
+   "time": "2026-10-03T10:44:08Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_032_047_A_014_2005_DHDH_M_20261003T104408_20261003T104439_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_032_047_A_015_4005_DHDH_A_20261003T104438_20261003T104512_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-10-15",
+   "time": "2026-10-15T10:44:08Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_033_047_A_014_2005_DHDH_M_20261015T104408_20261015T104439_P05023_N_F_J_001",
+    "NISAR_L2_PR_GCOV_033_047_A_015_4005_DHDH_A_20261015T104438_20261015T104512_P05023_N_F_J_001"
+   ]
+  },
+  {
+   "date": "2026-10-27",
+   "time": "2026-10-27T10:44:08Z",
+   "granules": [
+    "NISAR_L2_PR_GCOV_034_047_A_014_2005_DHDH_M_20261027T104408_20261027T104439_P05036_N_F_J_001",
+    "NISAR_L2_PR_GCOV_034_047_A_015_4005_DHDH_A_20261027T104438_20261027T104513_P05036_N_F_J_001"
+   ]
+  }
+ ],
+ "regions": {
+  "downtown": [
+   {
+    "date": "2025-11-25",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 1.3,
+    "bright": 98.7,
+    "meanHH": 255,
+    "meanHV": 253.7,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2025-12-07",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0.7,
+    "bright": 99.3,
+    "meanHH": 255,
+    "meanHV": 254.4,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2025-12-19",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0.7,
+    "bright": 99.3,
+    "meanHH": 255,
+    "meanHV": 254.3,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2025-12-31",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0.7,
+    "bright": 99.3,
+    "meanHH": 255,
+    "meanHV": 254.5,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-01-24",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.9,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-02-05",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.8,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-02-17",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.7,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-03-01",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.9,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-03-13",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 255,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-03-25",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.9,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-04-06",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 255,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-04-18",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.8,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-04-30",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.7,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-05-12",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.9,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-05-24",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.8,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-06-05",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.7,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-06-17",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.8,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-06-29",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.7,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-07-11",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.8,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-07-23",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.7,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-08-16",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.8,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-08-28",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.9,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-09-09",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.9,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-09-21",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.9,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-10-03",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 255,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-10-15",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 254.8,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2026-10-27",
+    "coverage": 100,
+    "water": 0,
+    "vegetation": 0,
+    "bright": 100,
+    "meanHH": 255,
+    "meanHV": 255,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   }
+  ],
+  "miamibeach": [
+   {
+    "date": "2025-11-25",
+    "coverage": 100,
+    "water": 8,
+    "vegetation": 30.9,
+    "bright": 61.1,
+    "meanHH": 224.3,
+    "meanHV": 219,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2025-12-07",
+    "coverage": 100,
+    "water": 7.8,
+    "vegetation": 28.2,
+    "bright": 64,
+    "meanHH": 225,
+    "meanHV": 221.2,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2025-12-19",
+    "coverage": 100,
+    "water": 6.4,
+    "vegetation": 29.2,
+    "bright": 64.4,
+    "meanHH": 227.8,
+    "meanHV": 219.3,
+    "changedVsBaseline": 1.2,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 1.2
+   },
+   {
+    "date": "2025-12-31",
+    "coverage": 100,
+    "water": 7.8,
+    "vegetation": 27,
+    "bright": 65.2,
+    "meanHH": 226.5,
+    "meanHV": 222.1,
+    "changedVsBaseline": 1.4,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 1.4
+   },
+   {
+    "date": "2026-01-24",
+    "coverage": 100,
+    "water": 6.4,
+    "vegetation": 26.7,
+    "bright": 66.9,
+    "meanHH": 229.6,
+    "meanHV": 222.7,
+    "changedVsBaseline": 1.8,
+    "brighterVsBaseline": 0.6,
+    "darkerVsBaseline": 1.2
+   },
+   {
+    "date": "2026-02-05",
+    "coverage": 100,
+    "water": 6.2,
+    "vegetation": 25.9,
+    "bright": 67.9,
+    "meanHH": 230.8,
+    "meanHV": 224,
+    "changedVsBaseline": 2.3,
+    "brighterVsBaseline": 1.6,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-02-17",
+    "coverage": 100,
+    "water": 6.6,
+    "vegetation": 25.7,
+    "bright": 67.7,
+    "meanHH": 229.2,
+    "meanHV": 224.6,
+    "changedVsBaseline": 1.9,
+    "brighterVsBaseline": 1.4,
+    "darkerVsBaseline": 0.6
+   },
+   {
+    "date": "2026-03-01",
+    "coverage": 100,
+    "water": 5.8,
+    "vegetation": 25.7,
+    "bright": 68.5,
+    "meanHH": 230.7,
+    "meanHV": 226.4,
+    "changedVsBaseline": 2.3,
+    "brighterVsBaseline": 1.8,
+    "darkerVsBaseline": 0.6
+   },
+   {
+    "date": "2026-03-13",
+    "coverage": 100,
+    "water": 5.8,
+    "vegetation": 24.1,
+    "bright": 70,
+    "meanHH": 232.2,
+    "meanHV": 227.2,
+    "changedVsBaseline": 4.1,
+    "brighterVsBaseline": 3.9,
+    "darkerVsBaseline": 0.2
+   },
+   {
+    "date": "2026-03-25",
+    "coverage": 100,
+    "water": 6.8,
+    "vegetation": 25.9,
+    "bright": 67.3,
+    "meanHH": 229.8,
+    "meanHV": 224,
+    "changedVsBaseline": 1.6,
+    "brighterVsBaseline": 0.8,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-04-06",
+    "coverage": 100,
+    "water": 6.2,
+    "vegetation": 26.5,
+    "bright": 67.3,
+    "meanHH": 229.8,
+    "meanHV": 222.9,
+    "changedVsBaseline": 1.2,
+    "brighterVsBaseline": 0.4,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-04-18",
+    "coverage": 100,
+    "water": 6,
+    "vegetation": 26.7,
+    "bright": 67.3,
+    "meanHH": 230,
+    "meanHV": 224,
+    "changedVsBaseline": 1.6,
+    "brighterVsBaseline": 0.8,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-04-30",
+    "coverage": 100,
+    "water": 6.8,
+    "vegetation": 25.9,
+    "bright": 67.3,
+    "meanHH": 229.8,
+    "meanHV": 223.8,
+    "changedVsBaseline": 1.8,
+    "brighterVsBaseline": 1,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-05-12",
+    "coverage": 100,
+    "water": 5.8,
+    "vegetation": 24.7,
+    "bright": 69.5,
+    "meanHH": 230.4,
+    "meanHV": 225.3,
+    "changedVsBaseline": 1.6,
+    "brighterVsBaseline": 0.6,
+    "darkerVsBaseline": 1
+   },
+   {
+    "date": "2026-05-24",
+    "coverage": 100,
+    "water": 6,
+    "vegetation": 27,
+    "bright": 66.9,
+    "meanHH": 230.1,
+    "meanHV": 223.8,
+    "changedVsBaseline": 0.6,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0.6
+   },
+   {
+    "date": "2026-06-05",
+    "coverage": 100,
+    "water": 7.6,
+    "vegetation": 27.6,
+    "bright": 64.8,
+    "meanHH": 227.7,
+    "meanHV": 221,
+    "changedVsBaseline": 1.4,
+    "brighterVsBaseline": 0.2,
+    "darkerVsBaseline": 1.2
+   },
+   {
+    "date": "2026-06-17",
+    "coverage": 100,
+    "water": 6.4,
+    "vegetation": 25.3,
+    "bright": 68.3,
+    "meanHH": 229.8,
+    "meanHV": 224.6,
+    "changedVsBaseline": 1.2,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 1.2
+   },
+   {
+    "date": "2026-06-29",
+    "coverage": 100,
+    "water": 7.2,
+    "vegetation": 27.2,
+    "bright": 65.6,
+    "meanHH": 227.9,
+    "meanHV": 221.8,
+    "changedVsBaseline": 1.2,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 1.2
+   },
+   {
+    "date": "2026-07-11",
+    "coverage": 100,
+    "water": 7.8,
+    "vegetation": 27.2,
+    "bright": 65,
+    "meanHH": 226.9,
+    "meanHV": 221.4,
+    "changedVsBaseline": 1.2,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 1.2
+   },
+   {
+    "date": "2026-07-23",
+    "coverage": 100,
+    "water": 7,
+    "vegetation": 25.9,
+    "bright": 67.1,
+    "meanHH": 228.5,
+    "meanHV": 223.1,
+    "changedVsBaseline": 1.2,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 1.2
+   },
+   {
+    "date": "2026-08-16",
+    "coverage": 100,
+    "water": 7.6,
+    "vegetation": 25.9,
+    "bright": 66.5,
+    "meanHH": 227.5,
+    "meanHV": 222.8,
+    "changedVsBaseline": 0.8,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-08-28",
+    "coverage": 100,
+    "water": 7.4,
+    "vegetation": 28.2,
+    "bright": 64.4,
+    "meanHH": 226,
+    "meanHV": 222,
+    "changedVsBaseline": 1.8,
+    "brighterVsBaseline": 0.8,
+    "darkerVsBaseline": 1
+   },
+   {
+    "date": "2026-09-09",
+    "coverage": 100,
+    "water": 7,
+    "vegetation": 25.1,
+    "bright": 67.9,
+    "meanHH": 228.9,
+    "meanHV": 223.6,
+    "changedVsBaseline": 1,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 1
+   },
+   {
+    "date": "2026-09-21",
+    "coverage": 100,
+    "water": 6.6,
+    "vegetation": 25.1,
+    "bright": 68.3,
+    "meanHH": 228.5,
+    "meanHV": 224.2,
+    "changedVsBaseline": 2.5,
+    "brighterVsBaseline": 1.8,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-10-03",
+    "coverage": 100,
+    "water": 6.4,
+    "vegetation": 24.7,
+    "bright": 68.9,
+    "meanHH": 230.8,
+    "meanHV": 225.2,
+    "changedVsBaseline": 1.9,
+    "brighterVsBaseline": 1.2,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-10-15",
+    "coverage": 100,
+    "water": 7.2,
+    "vegetation": 24.1,
+    "bright": 68.7,
+    "meanHH": 229.4,
+    "meanHV": 224.6,
+    "changedVsBaseline": 1.2,
+    "brighterVsBaseline": 0.4,
+    "darkerVsBaseline": 0.8
+   },
+   {
+    "date": "2026-10-27",
+    "coverage": 100,
+    "water": 6.6,
+    "vegetation": 22.8,
+    "bright": 70.6,
+    "meanHH": 231,
+    "meanHV": 226.6,
+    "changedVsBaseline": 3.5,
+    "brighterVsBaseline": 2.7,
+    "darkerVsBaseline": 0.8
+   }
+  ],
+  "everglades": [
+   {
+    "date": "2025-11-25",
+    "coverage": 100,
+    "water": 7.8,
+    "vegetation": 58.1,
+    "bright": 34.1,
+    "meanHH": 203.4,
+    "meanHV": 205.2,
+    "changedVsBaseline": 0,
+    "brighterVsBaseline": 0,
+    "darkerVsBaseline": 0
+   },
+   {
+    "date": "2025-12-07",
+    "coverage": 100,
+    "water": 8,
+    "vegetation": 57.7,
+    "bright": 34.3,
+    "meanHH": 203.8,
+    "meanHV": 203.6,
+    "changedVsBaseline": 6.9,
+    "brighterVsBaseline": 0.5,
+    "darkerVsBaseline": 6.4
+   },
+   {
+    "date": "2025-12-19",
+    "coverage": 100,
+    "water": 7.9,
+    "vegetation": 60.1,
+    "bright": 32,
+    "meanHH": 202,
+    "meanHV": 201.9,
+    "changedVsBaseline": 6,
+    "brighterVsBaseline": 0.6,
+    "darkerVsBaseline": 5.4
+   },
+   {
+    "date": "2025-12-31",
+    "coverage": 100,
+    "water": 7.9,
+    "vegetation": 62,
+    "bright": 30.1,
+    "meanHH": 202.2,
+    "meanHV": 200.8,
+    "changedVsBaseline": 13.8,
+    "brighterVsBaseline": 2.4,
+    "darkerVsBaseline": 11.3
+   },
+   {
+    "date": "2026-01-24",
+    "coverage": 100,
+    "water": 7.5,
+    "vegetation": 64.5,
+    "bright": 28,
+    "meanHH": 203.5,
+    "meanHV": 200.4,
+    "changedVsBaseline": 18,
+    "brighterVsBaseline": 5.5,
+    "darkerVsBaseline": 12.5
+   },
+   {
+    "date": "2026-02-05",
+    "coverage": 100,
+    "water": 7.8,
+    "vegetation": 65,
+    "bright": 27.2,
+    "meanHH": 202.6,
+    "meanHV": 197.1,
+    "changedVsBaseline": 25.3,
+    "brighterVsBaseline": 7.7,
+    "darkerVsBaseline": 17.6
+   },
+   {
+    "date": "2026-02-17",
+    "coverage": 100,
+    "water": 7.5,
+    "vegetation": 66.9,
+    "bright": 25.5,
+    "meanHH": 202.2,
+    "meanHV": 195,
+    "changedVsBaseline": 24.1,
+    "brighterVsBaseline": 6.5,
+    "darkerVsBaseline": 17.7
+   },
+   {
+    "date": "2026-03-01",
+    "coverage": 100,
+    "water": 7.7,
+    "vegetation": 66.7,
+    "bright": 25.6,
+    "meanHH": 203.9,
+    "meanHV": 194.9,
+    "changedVsBaseline": 30.7,
+    "brighterVsBaseline": 10.6,
+    "darkerVsBaseline": 20.1
+   },
+   {
+    "date": "2026-03-13",
+    "coverage": 100,
+    "water": 7.6,
+    "vegetation": 66.1,
+    "bright": 26.3,
+    "meanHH": 204.1,
+    "meanHV": 196.3,
+    "changedVsBaseline": 31.5,
+    "brighterVsBaseline": 11.4,
+    "darkerVsBaseline": 20
+   },
+   {
+    "date": "2026-03-25",
+    "coverage": 100,
+    "water": 8.7,
+    "vegetation": 64.8,
+    "bright": 26.5,
+    "meanHH": 197.6,
+    "meanHV": 191.9,
+    "changedVsBaseline": 25.1,
+    "brighterVsBaseline": 5.6,
+    "darkerVsBaseline": 19.5
+   },
+   {
+    "date": "2026-04-06",
+    "coverage": 100,
+    "water": 7.4,
+    "vegetation": 66.8,
+    "bright": 25.8,
+    "meanHH": 201.7,
+    "meanHV": 194,
+    "changedVsBaseline": 18.8,
+    "brighterVsBaseline": 4.3,
+    "darkerVsBaseline": 14.5
+   },
+   {
+    "date": "2026-04-18",
+    "coverage": 100,
+    "water": 7.6,
+    "vegetation": 67.6,
+    "bright": 24.8,
+    "meanHH": 201.1,
+    "meanHV": 193.8,
+    "changedVsBaseline": 26.2,
+    "brighterVsBaseline": 7.2,
+    "darkerVsBaseline": 19
+   },
+   {
+    "date": "2026-04-30",
+    "coverage": 100,
+    "water": 7.5,
+    "vegetation": 68.8,
+    "bright": 23.7,
+    "meanHH": 200.3,
+    "meanHV": 192.1,
+    "changedVsBaseline": 27.5,
+    "brighterVsBaseline": 6.9,
+    "darkerVsBaseline": 20.6
+   },
+   {
+    "date": "2026-05-12",
+    "coverage": 100,
+    "water": 8,
+    "vegetation": 68.4,
+    "bright": 23.6,
+    "meanHH": 200.5,
+    "meanHV": 192.7,
+    "changedVsBaseline": 31.2,
+    "brighterVsBaseline": 8.9,
+    "darkerVsBaseline": 22.3
+   },
+   {
+    "date": "2026-05-24",
+    "coverage": 100,
+    "water": 7.5,
+    "vegetation": 68.1,
+    "bright": 24.4,
+    "meanHH": 201.5,
+    "meanHV": 195.5,
+    "changedVsBaseline": 23.5,
+    "brighterVsBaseline": 7.2,
+    "darkerVsBaseline": 16.3
+   },
+   {
+    "date": "2026-06-05",
+    "coverage": 100,
+    "water": 7.3,
+    "vegetation": 60.4,
+    "bright": 32.3,
+    "meanHH": 210,
+    "meanHV": 205.4,
+    "changedVsBaseline": 14.2,
+    "brighterVsBaseline": 8.2,
+    "darkerVsBaseline": 5.9
+   },
+   {
+    "date": "2026-06-17",
+    "coverage": 100,
+    "water": 7.1,
+    "vegetation": 67.5,
+    "bright": 25.4,
+    "meanHH": 203.9,
+    "meanHV": 195.2,
+    "changedVsBaseline": 25.7,
+    "brighterVsBaseline": 7.5,
+    "darkerVsBaseline": 18.3
+   },
+   {
+    "date": "2026-06-29",
+    "coverage": 100,
+    "water": 8.4,
+    "vegetation": 64,
+    "bright": 27.6,
+    "meanHH": 200.1,
+    "meanHV": 193.2,
+    "changedVsBaseline": 25.9,
+    "brighterVsBaseline": 8.3,
+    "darkerVsBaseline": 17.6
+   },
+   {
+    "date": "2026-07-11",
+    "coverage": 100,
+    "water": 9.6,
+    "vegetation": 59.3,
+    "bright": 31.1,
+    "meanHH": 202.7,
+    "meanHV": 199.2,
+    "changedVsBaseline": 20.3,
+    "brighterVsBaseline": 7.6,
+    "darkerVsBaseline": 12.7
+   },
+   {
+    "date": "2026-07-23",
+    "coverage": 100,
+    "water": 8.2,
+    "vegetation": 62.7,
+    "bright": 29.2,
+    "meanHH": 201.1,
+    "meanHV": 198,
+    "changedVsBaseline": 20.3,
+    "brighterVsBaseline": 5.4,
+    "darkerVsBaseline": 14.9
+   },
+   {
+    "date": "2026-08-16",
+    "coverage": 100,
+    "water": 8.7,
+    "vegetation": 63,
+    "bright": 28.3,
+    "meanHH": 197.6,
+    "meanHV": 194.3,
+    "changedVsBaseline": 21.6,
+    "brighterVsBaseline": 3.9,
+    "darkerVsBaseline": 17.7
+   },
+   {
+    "date": "2026-08-28",
+    "coverage": 100,
+    "water": 8.5,
+    "vegetation": 62,
+    "bright": 29.5,
+    "meanHH": 202.3,
+    "meanHV": 199.7,
+    "changedVsBaseline": 16.9,
+    "brighterVsBaseline": 5.5,
+    "darkerVsBaseline": 11.3
+   },
+   {
+    "date": "2026-09-09",
+    "coverage": 100,
+    "water": 15.7,
+    "vegetation": 58.3,
+    "bright": 26,
+    "meanHH": 186,
+    "meanHV": 183.2,
+    "changedVsBaseline": 32.6,
+    "brighterVsBaseline": 5.1,
+    "darkerVsBaseline": 27.4
+   },
+   {
+    "date": "2026-09-21",
+    "coverage": 100,
+    "water": 18.3,
+    "vegetation": 56.5,
+    "bright": 25.2,
+    "meanHH": 180.5,
+    "meanHV": 180,
+    "changedVsBaseline": 32.6,
+    "brighterVsBaseline": 4.2,
+    "darkerVsBaseline": 28.5
+   },
+   {
+    "date": "2026-10-03",
+    "coverage": 100,
+    "water": 19.7,
+    "vegetation": 54.9,
+    "bright": 25.4,
+    "meanHH": 179.2,
+    "meanHV": 178.7,
+    "changedVsBaseline": 37.6,
+    "brighterVsBaseline": 5.6,
+    "darkerVsBaseline": 32
+   },
+   {
+    "date": "2026-10-15",
+    "coverage": 100,
+    "water": 15.6,
+    "vegetation": 55.7,
+    "bright": 28.6,
+    "meanHH": 186.2,
+    "meanHV": 188.1,
+    "changedVsBaseline": 28.7,
+    "brighterVsBaseline": 3.2,
+    "darkerVsBaseline": 25.4
+   },
+   {
+    "date": "2026-10-27",
+    "coverage": 100,
+    "water": 18.2,
+    "vegetation": 52.6,
+    "bright": 29.2,
+    "meanHH": 183.3,
+    "meanHV": 186,
+    "changedVsBaseline": 34.6,
+    "brighterVsBaseline": 5.7,
+    "darkerVsBaseline": 28.9
+   }
+  ]
+ }
+}
