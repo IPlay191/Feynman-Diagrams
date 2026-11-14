@@ -1,0 +1,320 @@
+{
+ "generated": "2026-11-14T18:40:09.814Z",
+ "studyBounds": {
+  "west": -81.32,
+  "south": 25.1,
+  "east": -80.05,
+  "north": 25.92
+ },
+ "cityBounds": {
+  "west": -80.215,
+  "south": 25.745,
+  "east": -80.105,
+  "north": 25.885
+ },
+ "sources": {
+  "city": "NISAR GCOV daily mosaic (NISAR_L2_Geocoded_Polarimetric_Covariance), NASA GIBS",
+  "photo": "VIIRS NOAA-20 true color (VIIRS_NOAA20_CorrectedReflectance_TrueColor), NASA GIBS",
+  "fires": "VIIRS 375 m fire detections, NOAA-20 + NOAA-21 (Thermal_Anomalies_375m_All), NASA GIBS",
+  "lights": "NASA Black Marble, NOAA-20 VIIRS gap-filled (VJ146A2), NASA GIBS"
+ },
+ "dates": {
+  "2025-11-25": {
+   "photoDate": "2025-11-23",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 1,
+    "all": 3
+   },
+   "photoClouds": 0
+  },
+  "2025-12-07": {
+   "photoDate": "2025-12-05",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 2
+   },
+   "photoClouds": 7
+  },
+  "2025-12-19": {
+   "photoDate": "2025-12-19",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 3,
+    "all": 4
+   },
+   "photoClouds": 7
+  },
+  "2025-12-31": {
+   "photoDate": "2025-12-31",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 1
+   },
+   "photoClouds": 0
+  },
+  "2026-01-24": {
+   "photoDate": "2026-01-25",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 2,
+    "all": 3
+   },
+   "photoClouds": 7
+  },
+  "2026-02-05": {
+   "photoDate": "2026-02-06",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 2,
+    "all": 3
+   },
+   "photoClouds": 0
+  },
+  "2026-02-17": {
+   "photoDate": "2026-02-16",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 3,
+    "all": 4
+   },
+   "photoClouds": 0
+  },
+  "2026-03-01": {
+   "photoDate": "2026-02-27",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 2,
+    "all": 3
+   },
+   "photoClouds": 3
+  },
+  "2026-03-13": {
+   "photoDate": "2026-03-11",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 1
+   },
+   "photoClouds": 5
+  },
+  "2026-03-25": {
+   "photoDate": "2026-03-25",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 1,
+    "all": 2
+   },
+   "photoClouds": 5
+  },
+  "2026-04-06": {
+   "photoDate": "2026-04-04",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 1,
+    "all": 3
+   },
+   "photoClouds": 9
+  },
+  "2026-04-18": {
+   "photoDate": "2026-04-16",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 2
+   },
+   "photoClouds": 1
+  },
+  "2026-04-30": {
+   "photoDate": "2026-05-01",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 7,
+    "all": 11
+   },
+   "photoClouds": 4
+  },
+  "2026-05-12": {
+   "photoDate": "2026-05-14",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 1,
+    "all": 4
+   },
+   "photoClouds": 3
+  },
+  "2026-05-24": {
+   "photoDate": "2026-05-24",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 1,
+    "all": 3
+   },
+   "photoClouds": 6
+  },
+  "2026-06-05": {
+   "photoDate": "2026-06-08",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 4
+   },
+   "photoClouds": 11
+  },
+  "2026-06-17": {
+   "photoDate": "2026-06-17",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 9
+   },
+   "photoClouds": 8
+  },
+  "2026-06-29": {
+   "photoDate": "2026-06-30",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 3,
+    "all": 18
+   },
+   "photoClouds": 12
+  },
+  "2026-07-11": {
+   "photoDate": "2026-07-12",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 7,
+    "all": 9
+   },
+   "photoClouds": 2
+  },
+  "2026-07-23": {
+   "photoDate": "2026-07-21",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 2
+   },
+   "photoClouds": 1
+  },
+  "2026-08-16": {
+   "photoDate": "2026-08-16",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 1,
+    "all": 4
+   },
+   "photoClouds": 1
+  },
+  "2026-08-28": {
+   "photoDate": "2026-08-27",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 28,
+    "all": 30
+   },
+   "photoClouds": 16
+  },
+  "2026-09-09": {
+   "photoDate": "2026-09-08",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 1
+   },
+   "photoClouds": 22
+  },
+  "2026-09-21": {
+   "photoDate": "2026-09-24",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 1
+   },
+   "photoClouds": 18
+  },
+  "2026-10-03": {
+   "photoDate": "2026-10-04",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 1
+   },
+   "photoClouds": 5
+  },
+  "2026-10-15": {
+   "photoDate": "2026-10-13",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 0
+   },
+   "photoClouds": 6
+  },
+  "2026-10-27": {
+   "photoDate": "2026-10-24",
+   "cityOk": true,
+   "fires": {
+    "downtown": 0,
+    "miamibeach": 0,
+    "everglades": 0,
+    "all": 0
+   },
+   "photoClouds": 8
+  }
+ }
+}

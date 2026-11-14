@@ -1,15 +1,17 @@
 import { REGIONS } from '../../shared/regions.js';
 import { LAYERS } from '../../shared/layers.js';
 import LayerCard from './LayerCard.jsx';
+import SpotPanel from './SpotPanel.jsx';
 import { FUTURE } from '../data/insights.js';
 
 const rgb = (c) => `rgb(${c.join(',')})`;
 
-function Overview({ onSelect }) {
+function Overview({ onSelect, activeLayers }) {
+  const layers = [...activeLayers].map((id) => LAYERS[id]);
   return (
     <div className="panel-body">
       <h2>Pick a place to explore</h2>
-      <p className="lead">Click one of the colored areas on the map, or choose one here.</p>
+      <p className="lead">Click one of the colored areas, or click <strong>anywhere else</strong> on the map to learn about that spot.</p>
       <div className="region-list">
         {Object.values(REGIONS).map((r) => (
           <button key={r.id} className="region-btn" style={{ '--c': rgb(r.color) }} onClick={() => onSelect(r.id)}>
@@ -21,6 +23,17 @@ function Overview({ onSelect }) {
           </button>
         ))}
       </div>
+
+      <h3>On the map right now</h3>
+      {layers.length === 0 && <p className="hint">Tick a box at the bottom (Flooding, Fires…) to color the map.</p>}
+      <ul className="onmap">
+        {layers.map((l) => (
+          <li key={l.id} style={{ '--accent': l.color }}>
+            <strong>{l.icon} {l.label}</strong>
+            <span>{l.map.text}</span>
+          </li>
+        ))}
+      </ul>
 
       <h3>What is NISAR?</h3>
       <p>
@@ -42,8 +55,15 @@ function Overview({ onSelect }) {
   );
 }
 
-export default function SidePanel({ selected, onSelect, activeLayers, date, nisar, lights }) {
-  if (!selected) return <aside className="panel"><Overview onSelect={onSelect} /></aside>;
+export default function SidePanel({ selected, onSelect, spot, onSpot, activeLayers, date, nisar, lights, sat, wx }) {
+  if (spot && !selected) {
+    return (
+      <aside className="panel">
+        <SpotPanel spot={spot} date={date} nisar={nisar} sat={sat} wx={wx} onClose={() => onSpot(null)} />
+      </aside>
+    );
+  }
+  if (!selected) return <aside className="panel"><Overview onSelect={onSelect} activeLayers={activeLayers} /></aside>;
   const r = REGIONS[selected];
   const layers = [...activeLayers].map((id) => LAYERS[id]);
   return (
@@ -55,7 +75,7 @@ export default function SidePanel({ selected, onSelect, activeLayers, date, nisa
         <p className="lead">{r.intro}</p>
         {layers.length === 0 && <p className="hint">Tick a box at the bottom (Flooding, Fires…) to see what is changing here.</p>}
         {layers.map((l) => (
-          <LayerCard key={l.id} region={r} layer={l} date={date} nisar={nisar} lights={lights} />
+          <LayerCard key={l.id} region={r} layer={l} date={date} nisar={nisar} lights={lights} sat={sat} />
         ))}
       </div>
     </aside>

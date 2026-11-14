@@ -7,6 +7,8 @@ export const LAYERS = {
   flooding: {
     id: 'flooding',
     label: 'Flooding',
+    // what ticking the box draws on the map
+    map: { radar: 'water', weather: 'rain', text: 'Blue = open water seen by NISAR. Bright cyan = new water since the first pass. Purple haze = rain in the 12 days before.' },
     icon: '💧',
     color: '#38bdf8',
     simple:
@@ -22,6 +24,7 @@ export const LAYERS = {
   deforestation: {
     id: 'deforestation',
     label: 'Deforestation',
+    map: { radar: 'plants', weather: 'plants', text: 'Green = plants seen by NISAR. Brown = places that looked like plants on the first pass but not anymore.' },
     icon: '🌳',
     color: '#4ade80',
     simple:
@@ -37,6 +40,7 @@ export const LAYERS = {
   fires: {
     id: 'fires',
     label: 'Fires',
+    map: { sat: 'fires', weather: 'heat', text: 'Red dots = fires spotted by the VIIRS satellites in the 12 days before. Orange haze = hot afternoons.' },
     icon: '🔥',
     color: '#f97316',
     simple:
@@ -53,6 +57,7 @@ export const LAYERS = {
   smog: {
     id: 'smog',
     label: 'Pollution / Smog',
+    map: { weather: 'pm25', text: 'Purple haze = fine particles (PM2.5) in the air. Darker = dirtier air.' },
     icon: '🌫️',
     color: '#a78bfa',
     simple:
@@ -70,6 +75,7 @@ export const LAYERS = {
   lights: {
     id: 'lights',
     label: 'Light Pollution',
+    map: { sat: 'lights', text: 'Yellow glow = light at night, from NASA Black Marble.' },
     icon: '💡',
     color: '#facc15',
     simple:

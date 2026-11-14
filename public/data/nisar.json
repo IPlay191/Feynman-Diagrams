@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-14T17:26:48.964Z",
+ "generated": "2026-11-14T19:34:50.020Z",
  "source": {
   "mission": "NISAR (NASA-ISRO Synthetic Aperture Radar), L-band, 12-day repeat",
   "product": "L2 GCOV (Geocoded Polarimetric Covariance) browse images, ASF DAAC",
@@ -16,6 +16,17 @@
   "south": 25.1,
   "east": -80.05,
   "north": 25.92
+ },
+ "grid": {
+  "cols": 706,
+  "rows": 456,
+  "step": 0.0018
+ },
+ "classes": {
+  "waterMax": 110,
+  "brightHH": 245,
+  "brightHV": 235,
+  "changeMin": 35
  },
  "baselineDate": "2025-11-25",
  "dates": [

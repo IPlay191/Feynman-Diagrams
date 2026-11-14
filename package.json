@@ -6,13 +6,16 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "concurrently -n api,web -c cyan,magenta \"npm:server\" \"npm:client\"",
-    "server": "node --watch server/index.js",
+    "dev": "concurrently -k -n api,web -c cyan,magenta \"npm:server\" \"npm:client\"",
+    "server": "node server/index.js",
     "client": "vite",
     "build": "vite build",
     "start": "node server/index.js",
     "fetch:nisar": "node scripts/fetch-nisar.js",
-    "fetch:lights": "node scripts/fetch-lights.js"
+    "fetch:lights": "node scripts/fetch-lights.js",
+    "fetch:satellites": "node scripts/fetch-satellites.js",
+    "fetch:weather-maps": "node scripts/fetch-weather-maps.js",
+    "fetch:all": "npm run fetch:nisar && npm run fetch:lights && npm run fetch:satellites && npm run fetch:weather-maps"
   },
   "dependencies": {
     "@deck.gl/core": "^9.4.1",

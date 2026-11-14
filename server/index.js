@@ -3,17 +3,16 @@
 import 'dotenv/config';
 import express from 'express';
 import path from 'node:path';
-import { REGIONS } from '../shared/regions.js';
+import { REGIONS, SOUTH_FL_BOUNDS, inBounds } from '../shared/regions.js';
 import { LAYERS, ALLOWED_PARAMS } from '../shared/layers.js';
 import { getNow, getDailySeries } from './meteomatics.js';
-import { tileRoute } from './tiles.js';
 
 const app = express();
 app.disable('x-powered-by');
 const PORT = Number(process.env.PORT) || 8787;
 
-// Map tiles (registered before the rate limiter: a map view loads dozens of tiles at once)
-app.get('/tiles/:layer/:date/:z/:y/:x.png', tileRoute);
+// What we show "right now" for any spot someone clicks on the map
+const SPOT_PARAMS = ['t_2m:C', 'precip_24h:mm', 'relative_humidity_2m:p', 'air_quality:idx'];
 
 // Small per-IP rate limit so a public deployment cannot burn through the API quota.
 const hits = new Map();
@@ -61,6 +60,20 @@ app.get('/api/now/:region/:layer', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// Current conditions at any spot in South Florida: /api/spot?lat=25.6&lon=-80.7
+app.get('/api/spot', async (req, res, next) => {
+  const lat = Number(req.query.lat);
+  const lon = Number(req.query.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || !inBounds(SOUTH_FL_BOUNDS, lon, lat)) {
+    return res.status(400).json({ error: 'lat/lon must be inside South Florida' });
+  }
+  // round to ~1 km so nearby clicks share the cache
+  const point = { lat: Math.round(lat * 100) / 100, lon: Math.round(lon * 100) / 100 };
+  try {
+    res.json({ point, values: await getNow(SPOT_PARAMS, point) });
+  } catch (e) { next(e); }
+});
+
 // Daily time series for one region and one layer: /api/series/everglades/flooding?start=2025-11-25&end=2026-10-27
 app.get('/api/series/:region/:layer', async (req, res, next) => {
   const r = region(req, res);
@@ -92,4 +105,13 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ error: 'Weather data is unavailable right now.' });
 });
 
-app.listen(PORT, () => console.log(`API ready on http://localhost:${PORT}`));
+const server = app.listen(PORT, (err) => {
+  if (!err) console.log(`API ready on http://localhost:${PORT}`);
+});
+// Make a busy port impossible to miss (otherwise the weather silently stops working).
+server.on('error', (e) => {
+  if (e.code === 'EADDRINUSE') {
+    console.error(`\n  Port ${PORT} is already in use: another copy of this server is still running.\n  Close the other terminal running "npm run dev" (or set PORT in .env), then try again.\n`);
+  } else console.error('[api] could not start:', e.message);
+  process.exit(1);
+});

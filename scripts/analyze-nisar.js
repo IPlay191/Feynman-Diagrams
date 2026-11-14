@@ -12,10 +12,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import { loadScene } from './lib/scene.js';
-import { REGIONS, pointInPolygon } from '../shared/regions.js';
+import { REGIONS, STUDY_BOUNDS, pointInPolygon } from '../shared/regions.js';
 
-// Study area covering all three regions, sampled on a ~200 m grid (the browse resolution).
-export const STUDY_BOUNDS = { west: -81.32, south: 25.1, east: -80.05, north: 25.92 };
+// The study area covering all three regions is sampled on a ~200 m grid (the browse resolution).
 const STEP = 0.0018;
 
 // Land-cover classes from the browse colors (calibrated against known places).
@@ -81,9 +80,10 @@ export async function analyzeAll(rawDir) {
   }
   const baseline = grids[0];
 
-  const changeDir = path.resolve('public/data/nisar/change');
-  await fs.rm(changeDir, { recursive: true, force: true });
-  await fs.mkdir(changeDir, { recursive: true });
+  await fs.rm(path.resolve('public/data/nisar/change'), { recursive: true, force: true }); // old format
+  const gridDir = path.resolve('public/data/nisar/grid');
+  await fs.rm(gridDir, { recursive: true, force: true });
+  await fs.mkdir(gridDir, { recursive: true });
   const radarDir = path.resolve('public/data/nisar/radar');
   await fs.rm(radarDir, { recursive: true, force: true });
   await fs.mkdir(radarDir, { recursive: true });
@@ -99,6 +99,8 @@ export async function analyzeAll(rawDir) {
       note: 'Values are relative brightness of the GCOV browse images (red/blue = HH, green = HV), not calibrated backscatter.',
     },
     studyBounds: STUDY_BOUNDS,
+    grid: { cols, rows, step: STEP },
+    classes: { waterMax: WATER_MAX, brightHH: BRIGHT_HH, brightHV: BRIGHT_HV, changeMin: CHANGE_MIN },
     baselineDate: baseline.date,
     dates: [],
     regions: Object.fromEntries(Object.keys(REGIONS).map((id) => [id, []])),
@@ -140,23 +142,17 @@ export async function analyzeAll(rawDir) {
       });
     }
 
-    // Change map: orange = brighter than baseline (more structure / double bounce / wetter
-    // vegetation), blue = darker (more open water, burned or cleared vegetation).
-    const img = Buffer.alloc(rows * cols * 4);
+    // Raw radar values for the website (lossless WebP, exact values): R = HH, G = HV, B = 255 where
+    // there is data. The browser turns these into the water / plants / change layers and the
+    // "this spot" readings.
+    const raw = Buffer.alloc(rows * cols * 3);
     for (let i = 0; i < rows * cols; i++) {
-      if (!g.valid[i] || !baseline.valid[i]) continue;
-      // ignore open water in both dates (wind ripples on the sea are not surface change)
-      if (classify(g.hh[i], g.hv[i]) === 'water' && classify(baseline.hh[i], baseline.hv[i]) === 'water') continue;
-      const d = (g.hh[i] + g.hv[i]) / 2 - (baseline.hh[i] + baseline.hv[i]) / 2;
-      if (Math.abs(d) < CHANGE_MIN) continue;
-      const a = Math.min(255, 90 + Math.abs(d) * 2);
-      const [r, gg, b] = d > 0 ? [249, 115, 22] : [59, 130, 246];
-      img.set([r, gg, b, a], i * 4);
+      if (g.valid[i]) raw.set([g.hh[i], g.hv[i], 255], i * 3);
     }
-    await sharp(img, { raw: { width: cols, height: rows, channels: 4 } }).png().toFile(path.join(changeDir, `${g.date}.png`));
+    await sharp(raw, { raw: { width: cols, height: rows, channels: 3 } }).webp({ lossless: true, effort: 6 }).toFile(path.join(gridDir, `${g.date}.webp`));
 
     // Radar picture for this pass, rebuilt from the ASF browse images (red/blue = HH, green = HV).
-    // The website shows it when zoomed out; NASA GIBS's sharper tiles take over when zoomed in.
+    // The website shows it when zoomed out; a sharper 15 m NISAR image covers the city.
     // A contrast curve (display only, the statistics above use the raw values) keeps the bright
     // browse values from washing out into white.
     const curve = (v) => Math.round(255 * (v / 255) ** 2.4);

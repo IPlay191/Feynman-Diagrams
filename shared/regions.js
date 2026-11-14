@@ -53,7 +53,17 @@ export const REGIONS = {
 export const REGION_IDS = Object.keys(REGIONS);
 
 // Whole map view of South Florida
-export const OVERVIEW_CAMERA = { center: [-80.55, 25.55], zoom: 8.6, pitch: 40, bearing: -12 };
+export const OVERVIEW_CAMERA = { center: [-80.62, 25.5], zoom: 8.7, pitch: 40, bearing: -12 };
+
+// Area covered by all our data (NISAR, weather maps, photos, fires, night lights).
+export const STUDY_BOUNDS = { west: -81.32, south: 25.1, east: -80.05, north: 25.92 };
+// Sharper (15 m) NISAR image around Downtown and Miami Beach.
+export const CITY_BOUNDS = { west: -80.215, south: 25.745, east: -80.105, north: 25.885 };
+// The map only shows South Florida; everything outside this box is hidden.
+export const SOUTH_FL_BOUNDS = { west: -81.55, south: 24.98, east: -79.85, north: 26.05 };
+
+export const boundsToCorners = (b) => [[b.west, b.north], [b.east, b.north], [b.east, b.south], [b.west, b.south]];
+export const inBounds = (b, lon, lat) => lon >= b.west && lon <= b.east && lat >= b.south && lat <= b.north;
 
 export function regionBBox(id) {
   const pts = REGIONS[id].polygon;

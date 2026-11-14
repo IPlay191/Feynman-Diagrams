@@ -27,7 +27,7 @@ function valueText(param, v, unit) {
   return `${fmt(v, param.endsWith(':idx') ? 2 : 1)}${unit ? ' ' + unit : ''}`;
 }
 
-export default function LayerCard({ region, layer, date, nisar, lights }) {
+export default function LayerCard({ region, layer, date, nisar, lights, sat }) {
   const [open, setOpen] = useState(false);
   const range = nisar ? { start: nisar.dates[0].date, end: nisar.dates.at(-1).date } : null;
   const weather = useWeather(region, layer, range);
@@ -68,6 +68,23 @@ export default function LayerCard({ region, layer, date, nisar, lights }) {
           <span>{rows.at(-1) && fmtDate(rows.at(-1).date)}</span>
         </div>
       </section>
+
+      {layer.id === 'fires' && sat && (
+        <section className="metric">
+          <div className="metric-top">
+            <span className="metric-label">🔥 VIIRS satellites: fire spots in the 12 days before</span>
+            <span className="metric-value">{sat.dates[date]?.fires[region.id] ?? '–'}</span>
+          </div>
+          <Sparkline
+            points={nisar.dates.map((d) => ({ x: Date.parse(d.date), y: sat.dates[d.date]?.fires[region.id] ?? null }))}
+            marker={Date.parse(date)}
+            color={layer.color}
+            yMin={0}
+            label="Fire spots over time"
+          />
+          <div className="metric-foot"><span>Shown as red dots on the map</span></div>
+        </section>
+      )}
 
       {layer.blackMarble && lightRow && (
         <section className="metric">

@@ -10,7 +10,17 @@ An interactive map that shows how NASA-ISRO's **NISAR** radar satellite sees thr
 | 🟦 **Miami Beach** | An island under pressure | Flooding, vegetation, night lights |
 | 🟩 **Everglades** | The river of grass | Wet-season flooding, vegetation, fires |
 
-Click an area to fly to it. The side panel then shows information **only for that area**. Tick the boxes at the bottom (Flooding, Deforestation, Fires, Pollution / Smog, Light Pollution) to choose the topics. Drag or play the timeline to step through all 27 NISAR passes from **Nov 2025 to Oct 2026**. Switch between **2D and 3D**, and between the **radar image**, the **"what changed" map** and a **plain map**.
+Click an area to fly to it. The side panel then shows information **only for that area**. Click **anywhere else** in South Florida for simple facts about that spot. Each box at the bottom draws its own layer on the map:
+
+| Box | On the map |
+|---|---|
+| 💧 Flooding | NISAR open water (blue), new water since the first pass (cyan), rain haze (Meteomatics) |
+| 🌳 Deforestation | NISAR plants (green), plants lost since the first pass (brown), plant water-use haze |
+| 🔥 Fires | VIIRS fire detections (red dots), afternoon-heat haze |
+| 🌫️ Pollution / Smog | PM2.5 haze (Meteomatics) |
+| 💡 Light Pollution | NASA Black Marble night lights |
+
+Drag or **play** the timeline through all 27 NISAR passes from **Nov 2025 to Oct 2026**. With **Sound on**, you also hear the data: higher notes mean more of what the radar measures, taps mean rain, and a buzzy tone means dirtier air. The map has four views: **Radar image**, **What changed** (3D blocks that rise and fall over time), **Satellite photo** and **Plain map**. **Low Quality Mode** (top right) turns off 3D and effects for older computers. Weak devices start with it on.
 
 ---
 
@@ -39,15 +49,25 @@ The processed NISAR and Black Marble data are already in `public/data/`, so the 
 
 ```powershell
 npm run build   # builds the website into dist/
-npm start       # one server: website + /api + /tiles on http://localhost:8787
+npm start       # one server: website + /api on http://localhost:8787
 ```
+
+### Troubleshooting
+
+- **No live weather / "Live weather is offline" banner:** the weather server is not running. Close every old terminal that runs `npm run dev`, then start it once. If port 8787 or 5173 is busy, the terminal now says so instead of quietly using another port.
+- **"needs your Meteomatics login" banner:** create `.env` from `.env.example`. Each teammate needs their own copy, because `.env` is not in Git.
 
 ### Refreshing the data
 
 ```powershell
-npm run fetch:nisar    # search ASF, download NISAR browse images (~220 MB, cached in data/raw), analyze
-npm run fetch:lights   # Black Marble night-light values per area (run after fetch:nisar)
+npm run fetch:nisar         # search ASF, download NISAR browse images (~220 MB, cached in data/raw), analyze
+npm run fetch:lights        # Black Marble night-light values per area
+npm run fetch:satellites    # sharp city radar, true-color photos, fire detections, night-light pictures (NASA GIBS)
+npm run fetch:weather-maps  # Meteomatics weather maps for each pass (needs .env)
+npm run fetch:all           # all of the above, in order
 ```
+
+All map pictures are saved ahead of time in `public/data/`. The website does not load live map tiles from NASA, which keeps the map from flickering and works on slow connections.
 
 ---
 
@@ -55,9 +75,8 @@ npm run fetch:lights   # Black Marble night-light values per area (run after fet
 
 ```
 Browser (React + MapLibre + deck.gl)
-   │  /api/series, /api/now ──► server/index.js ──► Meteomatics API   (password stays on the server)
-   │  /tiles/nisar, /tiles/lights ──► server/tiles.js ──► NASA GIBS   (retries + disk cache)
-   └─ /data/*.json (pre-computed by scripts/)
+   │  /api/series, /api/now, /api/spot ──► server/index.js ──► Meteomatics API   (password stays on the server)
+   └─ /data/* pictures and JSON (pre-computed by scripts/ from ASF, NASA GIBS and Meteomatics)
 ```
 
 ### NISAR radar (the core data)

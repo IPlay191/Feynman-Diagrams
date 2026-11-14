@@ -21,7 +21,7 @@ export const SOURCES = [
       {
         name: 'NASA GIBS / Worldview NISAR layer',
         url: 'https://nisar-docs.asf.alaska.edu/worldview/',
-        used: 'The sharp radar image when you zoom in on an area: NISAR_L2_Geocoded_Polarimetric_Covariance daily mosaics at 15.6 m resolution. Zoomed out, the map shows our own picture built from the ASF browse images.',
+        used: 'The sharp 15 m radar image when you zoom in on Downtown and Miami Beach (NISAR_L2_Geocoded_Polarimetric_Covariance). Zoomed out, the map shows our own picture built from the ASF browse images.',
       },
     ],
   },
@@ -31,7 +31,22 @@ export const SOURCES = [
       {
         name: 'Meteomatics Weather API',
         url: 'https://www.meteomatics.com/en/api/getting-started/',
-        used: 'Rain, soil moisture, temperature, humidity, wind gusts, evapotranspiration and air quality (PM2.5, ozone, NO₂, air quality index) for each area. A small server keeps the API password private.',
+        used: 'Rain, soil moisture, temperature, humidity, wind gusts, evapotranspiration and air quality (PM2.5, ozone, NO₂, air quality index). Weather maps (the colored haze for rain, plants, heat and smog) cover all of South Florida for the 12 days before each NISAR pass. A small server keeps the API password private.',
+      },
+    ],
+  },
+  {
+    group: 'More satellites',
+    items: [
+      {
+        name: 'VIIRS true-color photos (NOAA-20) via NASA GIBS',
+        url: 'https://www.earthdata.nasa.gov/data/instruments/viirs',
+        used: 'The "Satellite photo" view: a regular color picture from the clearest day near each NISAR pass, so you can compare what a camera sees with what radar sees.',
+      },
+      {
+        name: 'VIIRS fire detections (NOAA-20 + NOAA-21) via NASA GIBS',
+        url: 'https://www.earthdata.nasa.gov/data/tools/firms',
+        used: 'The red dots in the Fires layer: every fire the satellites spotted in the 12 days before each NISAR pass. The same data powers NASA FIRMS.',
       },
     ],
   },
