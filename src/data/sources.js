@@ -39,11 +39,6 @@ export const SOURCES = [
     group: 'More satellites',
     items: [
       {
-        name: 'VIIRS true-color photos (NOAA-20) via NASA GIBS',
-        url: 'https://www.earthdata.nasa.gov/data/instruments/viirs',
-        used: 'The "Satellite photo" view: a regular color picture from the clearest day near each NISAR pass, so you can compare what a camera sees with what radar sees.',
-      },
-      {
         name: 'VIIRS fire detections (NOAA-20 + NOAA-21) via NASA GIBS',
         url: 'https://www.earthdata.nasa.gov/data/tools/firms',
         used: 'The red dots in the Fires layer: every fire the satellites spotted in the 12 days before each NISAR pass. The same data powers NASA FIRMS.',

@@ -20,7 +20,7 @@ Click an area to fly to it. The side panel then shows information **only for tha
 | 🌫️ Pollution / Smog | PM2.5 haze (Meteomatics) |
 | 💡 Light Pollution | NASA Black Marble night lights |
 
-Drag or **play** the timeline through all 27 NISAR passes from **Nov 2025 to Oct 2026**. With **Sound on**, you also hear the data: higher notes mean more of what the radar measures, taps mean rain, and a buzzy tone means dirtier air. The map has four views: **Radar image**, **What changed**, **Satellite photo** and **Plain map**. "What changed" compares each pass with the first one: blue means **less signal came back** (often new standing water, or plants that dried, burned or were cut), orange means **more signal came back** (often thicker or wetter plants, new buildings, or water under trees).
+Drag or **play** the timeline through all 27 NISAR passes from **Nov 2025 to Oct 2026**. With **Sound on**, you also hear the data: higher notes mean more of what the radar measures, taps mean rain, and a buzzy tone means dirtier air. The map has three views: **Radar image**, **What changed** and **Plain map**. "What changed" compares each pass with the first one: blue means **less signal came back** (often new standing water, or plants that dried, burned or were cut), orange means **more signal came back** (often thicker or wetter plants, new buildings, or water under trees).
 
 In **3D**, every checkbox draws columns that grow and shrink as the timeline plays: new water, plant cover (brown where plants were lost), fires, PM2.5 and night lights. Click an area to focus on it: the map then shows only that area's pictures, columns and info. **Low Quality Mode** (top right) turns off 3D and effects for older computers. Weak devices start with it on.
 
@@ -74,7 +74,7 @@ Without those two variables the site still works: the weather cards show the sav
 ```powershell
 npm run fetch:nisar         # search ASF, download NISAR browse images (~220 MB, cached in data/raw), analyze
 npm run fetch:lights        # Black Marble night-light values per area
-npm run fetch:satellites    # sharp city radar, true-color photos, fire detections, night-light pictures (NASA GIBS)
+npm run fetch:satellites    # sharp city radar, fire detections, night-light pictures (NASA GIBS)
 npm run fetch:weather-maps  # Meteomatics weather maps for each pass (needs .env)
 npm run fetch:laguaira      # La Guaira: NISAR GUNW + USGS quakes (~150 MB browse, plus 4 x 2.3 GB .h5 in a temp folder)
 npm run fetch:all           # all of the above, in order

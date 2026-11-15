@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ColumnLayer, PathLayer, ScatterplotLayer, SolidPolygonLayer, TextLayer } from '@deck.gl/layers';
-import { LG_BOUNDS, LG_CAMERA, LG_MAP_BOUNDS, LG_POLYGON, LG_TOWNS } from '../../shared/laguaira.js';
+import { LG_BOUNDS, LG_CAMERA, LG_MAP_BOUNDS, LG_NEIGHBORS, LG_POLYGON, LG_TOWNS } from '../../shared/laguaira.js';
 import { boundsToCorners } from '../../shared/regions.js';
 import { rampColor } from './ramp.js';
 
@@ -81,9 +81,13 @@ export default function LaGuairaMap({ data, pair, view, mode, lowQuality, select
     if (!ready) return;
     const map = mapRef.current;
     const bearing = use3d ? LG_CAMERA.bearing : 0;
-    const cam = map.cameraForBounds(STATE_BOX, { padding: 40, bearing });
+    // frame the state and every quake, so the nearby quakes and their cities are in view too
+    const lons = [STATE_BOX[0][0], STATE_BOX[1][0], ...data.quakes.map((q) => q.lon)];
+    const lats = [STATE_BOX[0][1], STATE_BOX[1][1], ...data.quakes.map((q) => q.lat)];
+    const box = [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
+    const cam = map.cameraForBounds(box, { padding: { top: 60, bottom: 60, left: 90, right: 60 }, bearing });
     if (cam) map.easeTo({ ...cam, bearing, pitch: use3d ? LG_CAMERA.pitch : 0, duration: 800 });
-  }, [use3d, ready]);
+  }, [use3d, ready, data]);
 
   // the NISAR picture: raw rings, or ground movement in cm
   const movement = pair?.movement && view === 'movement' ? data.movement[pair.movement] : null;
@@ -116,7 +120,17 @@ export default function LaGuairaMap({ data, pair, view, mode, lowQuality, select
     const shown = data.quakes.filter((q) => q.time <= end);
     const isNew = (q) => pair.quakes.includes(q.id);
     const layers = [
-      new SolidPolygonLayer({ id: 'outside', data: [{ p: [WORLD, LG_POLYGON] }], getPolygon: (d) => d.p, getFillColor: [11, 18, 32, 150], pickable: false }),
+      // a light dim outside La Guaira: the state stands out, but the streets of neighboring cities still show
+      new SolidPolygonLayer({ id: 'outside', data: [{ p: [WORLD, LG_POLYGON] }], getPolygon: (d) => d.p, getFillColor: [11, 18, 32, 60], pickable: false }),
+      new ScatterplotLayer({
+        id: 'neighbors', data: LG_NEIGHBORS, getPosition: (t) => [t.lon, t.lat], getRadius: 3, radiusUnits: 'pixels',
+        getFillColor: [148, 163, 184, 220], getLineColor: [11, 18, 32, 255], stroked: true, lineWidthUnits: 'pixels', getLineWidth: 1,
+      }),
+      new TextLayer({
+        id: 'neighbor-names', data: LG_NEIGHBORS, getText: (t) => t.name, getPosition: (t) => [t.lon, t.lat], getSize: 11,
+        getColor: [148, 163, 184, 235], getTextAnchor: 'middle', getAlignmentBaseline: 'top', getPixelOffset: [0, 6],
+        fontFamily: 'system-ui, sans-serif', outlineWidth: 3, outlineColor: [11, 18, 32, 255], fontSettings: { sdf: true }, characterSet: 'auto',
+      }),
       new PathLayer({ id: 'outline', data: [{ p: LG_POLYGON }], getPath: (d) => d.p, getColor: [56, 189, 248, 230], getWidth: 2, widthUnits: 'pixels' }),
       new TextLayer({
         id: 'sea', data: SEA_LABELS, getText: (d) => d.text, getPosition: (d) => d.position, getSize: 13, getColor: [148, 163, 184, 200],

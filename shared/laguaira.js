@@ -29,6 +29,22 @@ export const LG_CAMERA = { center: [-66.86, 10.54], zoom: 9.8, pitch: 42, bearin
 // Quakes are listed when they are this close to La Guaira (or inside it).
 export const LG_QUAKE_KM = 35;
 
+// Neighboring cities outside La Guaira, drawn more faintly, so quakes outside the state have
+// places around them (approximate city centers).
+export const LG_NEIGHBORS = [
+  { name: 'Caracas', lon: -66.903, lat: 10.488 },
+  { name: 'Petare', lon: -66.807, lat: 10.477 },
+  { name: 'Guarenas', lon: -66.614, lat: 10.467 },
+  { name: 'Guatire', lon: -66.539, lat: 10.474 },
+  { name: 'El Junquito', lon: -67.088, lat: 10.461 },
+  { name: 'Los Teques', lon: -67.04, lat: 10.344 },
+  { name: 'Colonia Tovar', lon: -67.29, lat: 10.409 },
+  { name: 'La Victoria', lon: -67.332, lat: 10.227 },
+  { name: 'Choroní', lon: -67.607, lat: 10.506 },
+  { name: 'Chuao', lon: -67.527, lat: 10.511 },
+  { name: 'Ocumare de la Costa', lon: -67.772, lat: 10.469 },
+];
+
 // Places we report ground movement for (approximate town centers).
 export const LG_TOWNS = [
   { name: 'Carayaca', lon: -67.115, lat: 10.537 },

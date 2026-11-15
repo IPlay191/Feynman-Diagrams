@@ -6,10 +6,9 @@
 // Saving them ahead of time keeps the website fast and stops the map from flickering.
 //
 //   public/data/sat/city/<date>.webp    NISAR radar at 15 m around Downtown + Miami Beach
-//   public/data/sat/photo/<date>.jpg    true-color photo (VIIRS), clearest day within ±3 days
 //   public/data/sat/fires/<date>.png    fire detections (VIIRS) in the 12 days up to the date
 //   public/data/sat/lights/<date>.webp  night lights (NASA Black Marble)
-//   public/data/satellites.json         fire counts per region + photo dates
+//   public/data/satellites.json         fire counts per region
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -55,17 +54,6 @@ function brokenShare({ data }) {
   return bad / n;
 }
 
-// Share of very bright, colorless pixels = clouds
-function cloudShare({ data }) {
-  let c = 0, n = 0;
-  for (let i = 0; i < data.length; i += 4 * 7) {
-    const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
-    n++;
-    if (r > 175 && g > 175 && b > 175 && Math.max(r, g, b) - Math.min(r, g, b) < 40) c++;
-  }
-  return c / n;
-}
-
 async function exists(p) {
   try { await fs.access(p); return true; } catch { return false; }
 }
@@ -99,7 +87,7 @@ function countSpots(mask, w, h, poly) {
 async function main() {
   const nisar = JSON.parse(await fs.readFile(path.resolve('public/data/nisar.json'), 'utf8'));
   const dates = nisar.dates.map((d) => d.date);
-  for (const d of ['city', 'photo', 'fires', 'lights']) await fs.mkdir(path.join(OUT, d), { recursive: true });
+  for (const d of ['city', 'fires', 'lights']) await fs.mkdir(path.join(OUT, d), { recursive: true });
 
   const out = {
     generated: new Date().toISOString(),
@@ -107,7 +95,6 @@ async function main() {
     cityBounds: CB,
     sources: {
       city: 'NISAR GCOV daily mosaic (NISAR_L2_Geocoded_Polarimetric_Covariance), NASA GIBS',
-      photo: 'VIIRS NOAA-20 true color (VIIRS_NOAA20_CorrectedReflectance_TrueColor), NASA GIBS',
       fires: 'VIIRS 375 m fire detections, NOAA-20 + NOAA-21 (Thermal_Anomalies_375m_All), NASA GIBS',
       lights: 'NASA Black Marble, NOAA-20 VIIRS gap-filled (VJ146A2), NASA GIBS',
     },
@@ -115,7 +102,7 @@ async function main() {
   };
 
   for (const date of dates) {
-    const rec = { photoDate: null, cityOk: false, fires: {} };
+    const rec = { cityOk: false, fires: {} };
 
     // 1. Sharp NISAR radar over the city
     const cityFile = path.join(OUT, 'city', `${date}.webp`);
@@ -130,24 +117,7 @@ async function main() {
       }
     }
 
-    // 2. Clearest true-color photo within ±3 days
-    const photoFile = path.join(OUT, 'photo', `${date}.jpg`);
-    let best = null;
-    for (const k of [0, -1, 1, -2, 2, -3, 3]) {
-      const d = shift(date, k);
-      const buf = await wms('VIIRS_NOAA20_CorrectedReflectance_TrueColor', d, SB, STUDY_W, STUDY_H, 'image/jpeg');
-      if (!buf) continue;
-      const clouds = cloudShare(await pixels(buf));
-      if (!best || clouds < best.clouds) best = { d, buf, clouds };
-      if (clouds < 0.08) break;
-    }
-    if (best) {
-      await sharp(best.buf).jpeg({ quality: 78 }).toFile(photoFile);
-      rec.photoDate = best.d;
-      rec.photoClouds = Math.round(best.clouds * 100);
-    }
-
-    // 3. Fire detections: everything detected in the 12 days up to this NISAR pass
+    // 2. Fire detections: everything detected in the 12 days up to this NISAR pass
     const fireMask = new Uint8Array(STUDY_W * STUDY_H);
     for (let k = -11; k <= 0; k++) {
       for (const layer of ['VIIRS_NOAA20_Thermal_Anomalies_375m_All', 'VIIRS_NOAA21_Thermal_Anomalies_375m_All']) {
@@ -163,7 +133,7 @@ async function main() {
     for (const r of Object.values(REGIONS)) rec.fires[r.id] = countSpots(fireMask, STUDY_W, STUDY_H, r.polygon);
     rec.fires.all = countSpots(fireMask, STUDY_W, STUDY_H, [[SB.west, SB.south], [SB.east, SB.south], [SB.east, SB.north], [SB.west, SB.north]]);
 
-    // 4. Night lights (brightest of 3 nights, to skip cloudy ones)
+    // 3. Night lights (brightest of 3 nights, to skip cloudy ones)
     const lightsFile = path.join(OUT, 'lights', `${date}.webp`);
     let bestLight = null;
     for (const k of [0, -1, 1]) {
@@ -185,7 +155,7 @@ async function main() {
     }
 
     out.dates[date] = rec;
-    console.log(date, `city:${rec.cityOk ? 'ok' : 'MISSING'}`, `photo:${rec.photoDate} (${rec.photoClouds}% cloud)`, 'fires:', JSON.stringify(rec.fires));
+    console.log(date, `city:${rec.cityOk ? 'ok' : 'MISSING'}`, 'fires:', JSON.stringify(rec.fires));
   }
 
   await fs.writeFile(path.resolve('public/data/satellites.json'), JSON.stringify(out, null, 1));

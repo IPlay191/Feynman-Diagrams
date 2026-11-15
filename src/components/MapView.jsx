@@ -34,7 +34,6 @@ const LABEL_AT = {
 // Image layers, bottom to top. Every one is a single pre-made picture (no live map tiles), which
 // is what stops the flickering.
 const IMAGE_LAYERS = [
-  { id: 'photo', corners: STUDY },
   { id: 'radar-local', corners: STUDY },
   { id: 'radar-city', corners: CITY, minzoom: 10.5 },
   { id: 'change-flat', corners: STUDY },
@@ -288,7 +287,6 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
     };
 
     // base picture
-    put('photo', view === 'photo' && sat?.dates[date]?.photoDate ? `/data/sat/photo/${date}.jpg` : null);
     put('radar-local', view === 'radar' ? `/data/nisar/radar/${date}.webp` : null);
     put('radar-city', view === 'radar' && !lowQuality && sat?.dates[date]?.cityOk ? `/data/sat/city/${date}.webp` : null, CITY);
     put('change-flat', view === 'change' ? radarPicture('change', date, base, classes) : null, STUDY, { smooth: false });

@@ -30,15 +30,15 @@ export default function App({ onSwitch }) {
   const [selected, setSelected] = useState(null);
   const [spot, setSpot] = useState(null);
   const [mode, setMode] = useState('3d');
-  const [view, setView] = useState('radar'); // 'radar' | 'change' | 'photo' | 'plain'
+  const [view, setView] = useState('plain'); // 'radar' | 'change' | 'plain' (visitors start on the plain map)
   const [active, setActive] = useState(() => new Set(['flooding']));
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
   const [lowQuality, setLowQuality] = useState(initialLowQuality);
   const [sourcesOpen, setSourcesOpen] = useState(false);
-  // the map key starts folded on short screens, so it never covers the map
-  const [keyOpen, setKeyOpen] = useState(() => window.innerHeight >= 800);
+  // the map key starts open; visitors can fold it away
+  const [keyOpen, setKeyOpen] = useState(true);
   const sound = useRef(null);
 
   useEffect(() => {
@@ -128,7 +128,6 @@ export default function App({ onSwitch }) {
       legendItems.push({ ramp: RAMP_CSS[m.weather], t: `${w.label}`, range: `${Math.round(w.min)}–${Math.round(w.max)} ${w.unit}` });
     }
   }
-  const photoDate = sat?.dates[date]?.photoDate;
 
   // "What changed" numbers for the selected area (share of the area that got a weaker / stronger echo)
   const changeRow = selected && nisar ? nisar.regions[selected].find((r) => r.date === date) : null;
@@ -139,8 +138,7 @@ export default function App({ onSwitch }) {
         <div>
           <h1>Dancing with SARs <span className="by">by Feynman Diagrams</span></h1>
           <p className="sub">
-            South Florida never stands still. Water spreads and shrinks, plants grow and burn, and cities glow. The NISAR radar
-            satellite watches it all every 12 days, through clouds, day and night. Click a colored area, or any spot, to explore.
+           The NISAR radar satellite watches it all every 12 days, through clouds, day and night. Click a colored area, or any spot, to explore.
           </p>
         </div>
         <div className="top-actions">
@@ -179,7 +177,6 @@ export default function App({ onSwitch }) {
             <div className="seg" role="group" aria-label="Map picture">
               <button className={view === 'radar' ? 'on' : ''} onClick={() => setView('radar')}>Radar image</button>
               <button className={view === 'change' ? 'on' : ''} onClick={() => setView('change')}>What changed</button>
-              <button className={view === 'photo' ? 'on' : ''} onClick={() => setView('photo')}>Satellite photo</button>
               <button className={view === 'plain' ? 'on' : ''} onClick={() => setView('plain')}>Plain map</button>
             </div>
           </div>
@@ -219,13 +216,6 @@ export default function App({ onSwitch }) {
                     In {REGIONS[selected].name}: <b>{changeRow.darkerVsBaseline}%</b> less signal · <b>{changeRow.brighterVsBaseline}%</b> more signal
                   </span>
                 )}
-              </>
-            )}
-            {view === 'photo' && (
-              <>
-                <strong>True-color photo (VIIRS)</strong>
-                <span>{photoDate ? `Taken ${fmtShort(photoDate)}, clearest day near this pass` : 'No photo for this date'}</span>
-                <span className="small-muted">White patches are clouds. Radar sees through them!</span>
               </>
             )}
             {legendItems.length > 0 && (

@@ -87,7 +87,7 @@ export default function LaGuairaApp({ onSwitch }) {
   const [selectedQuake, setSelectedQuake] = useState(null);
   const [lowQuality, setLowQuality] = useState(initialLowQuality);
   const [sourcesOpen, setSourcesOpen] = useState(false);
-  const [keyOpen, setKeyOpen] = useState(() => window.innerHeight >= 800);
+  const [keyOpen, setKeyOpen] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
   const sound = useRef(null);
   // sound can only start after a click or drag (browser rule)
