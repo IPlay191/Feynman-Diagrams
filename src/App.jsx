@@ -37,6 +37,8 @@ export default function App() {
   const [soundOn, setSoundOn] = useState(true);
   const [lowQuality, setLowQuality] = useState(initialLowQuality);
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  // the map key starts folded on short screens, so it never covers the map
+  const [keyOpen, setKeyOpen] = useState(() => window.innerHeight >= 800);
   const sound = useRef(null);
 
   useEffect(() => {
@@ -179,7 +181,11 @@ export default function App() {
             </div>
           </div>
 
-          <div className="legend">
+          <div className={`legend ${keyOpen ? '' : 'closed'}`}>
+            <button className="legend-toggle" onClick={() => setKeyOpen((o) => !o)} aria-expanded={keyOpen}>
+              {keyOpen ? '▾ Hide map key' : '▸ Show map key'}
+            </button>
+            {keyOpen && <>
             {view === 'radar' && (
               <>
                 <strong>NISAR radar colors</strong>
@@ -191,18 +197,16 @@ export default function App() {
             {view === 'change' && (
               <>
                 <strong>What changed since {first}</strong>
-                <span className="small-muted legend-note">
-                  NISAR sends a radar signal down and measures how much of it bounces back up, like an echo.
-                </span>
+                {/* short version; the full explanation is in the side panel */}
                 <span className="legend-key">
                   <i style={{ background: '#3b82f6' }} />
-                  <span><b>Less signal came back.</b> Usually new standing water (flooding), or plants that dried out, burned or were cut down.</span>
+                  <span><b>Less signal came back</b> (often new water, or lost plants)</span>
                 </span>
                 <span className="legend-key">
                   <i style={{ background: '#f97316' }} />
-                  <span><b>More signal came back.</b> Usually thicker or wetter plants, new buildings, or water under trees.</span>
+                  <span><b>More signal came back</b> (often more plants, or buildings)</span>
                 </span>
-                {is3d && <span className="small-muted">Taller block = bigger change. No block = about the same.</span>}
+                {is3d && <span className="small-muted">Taller block = bigger change.</span>}
                 {changeRow && changeRow.bright >= 95 ? (
                   <span className="legend-stat">
                     {REGIONS[selected].name} is so full of buildings that the echo is always at its strongest, so this picture shows no change here.
@@ -238,6 +242,7 @@ export default function App() {
                 </button>
               ))}
             </div>
+            </>}
           </div>
 
           {loadError && <div className="banner">{loadError}</div>}

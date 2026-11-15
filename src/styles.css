@@ -217,9 +217,16 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.25; }
 
 /* keep the map controls above the deck.gl canvas */
 .map-tools, .legend, .banner { z-index: 3; }
+.map-tools { z-index: 4; } /* the view buttons always stay on top of the map key */
+
+/* The map key never grows past the view buttons; long keys scroll, and it can be folded away. */
+.legend { top: auto; max-width: 300px; max-height: calc(100% - 100px); overflow-y: auto; }
+.legend.closed { padding: 6px 10px; }
+.legend-toggle { align-self: flex-start; background: none; border: 0; padding: 0 0 2px; color: var(--muted); font-size: 0.78rem; cursor: pointer; }
+.legend-toggle:hover { color: var(--text); }
+.legend.closed .legend-toggle { padding: 0; }
 
 /* ---------- "What changed" explanations ---------- */
-.legend { max-width: 340px; }
 .legend-note { display: block; line-height: 1.35; }
 .legend-key { display: flex; gap: 8px; align-items: flex-start; line-height: 1.35; }
 .legend-key i { flex: none; margin-top: 3px; }
