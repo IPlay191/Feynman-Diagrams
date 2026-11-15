@@ -5,7 +5,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const BASE = 'https://api.meteomatics.com';
-const CACHE_DIR = path.resolve('.cache/meteomatics');
+// Vercel's file system is read-only except /tmp
+const CACHE_DIR = process.env.VERCEL ? '/tmp/meteomatics' : path.resolve('.cache/meteomatics');
 const memory = new Map(); // url -> { expires, data }
 
 function authHeader() {
@@ -38,8 +39,8 @@ async function cachedFetch(url, ttlMs) {
   const data = await res.json();
   memory.set(url, { expires: Date.now() + ttlMs, data });
   if (ttlMs === Infinity) {
-    await fs.mkdir(CACHE_DIR, { recursive: true });
-    await fs.writeFile(file, JSON.stringify(data));
+    // best effort: a cache that cannot be written must never break the answer
+    await fs.mkdir(CACHE_DIR, { recursive: true }).then(() => fs.writeFile(file, JSON.stringify(data))).catch(() => {});
   }
   return data;
 }

@@ -20,7 +20,9 @@ Click an area to fly to it. The side panel then shows information **only for tha
 | 🌫️ Pollution / Smog | PM2.5 haze (Meteomatics) |
 | 💡 Light Pollution | NASA Black Marble night lights |
 
-Drag or **play** the timeline through all 27 NISAR passes from **Nov 2025 to Oct 2026**. With **Sound on**, you also hear the data: higher notes mean more of what the radar measures, taps mean rain, and a buzzy tone means dirtier air. The map has four views: **Radar image**, **What changed** (3D blocks that rise and fall over time), **Satellite photo** and **Plain map**. **Low Quality Mode** (top right) turns off 3D and effects for older computers. Weak devices start with it on.
+Drag or **play** the timeline through all 27 NISAR passes from **Nov 2025 to Oct 2026**. With **Sound on**, you also hear the data: higher notes mean more of what the radar measures, taps mean rain, and a buzzy tone means dirtier air. The map has four views: **Radar image**, **What changed**, **Satellite photo** and **Plain map**. "What changed" compares each pass with the first one: blue means **less signal came back** (often new standing water, or plants that dried, burned or were cut), orange means **more signal came back** (often thicker or wetter plants, new buildings, or water under trees).
+
+In **3D**, every checkbox draws columns that grow and shrink as the timeline plays: new water, plant cover (brown where plants were lost), fires, PM2.5 and night lights. Click an area to focus on it: the map then shows only that area's pictures, columns and info. **Low Quality Mode** (top right) turns off 3D and effects for older computers. Weak devices start with it on.
 
 ---
 
@@ -52,9 +54,19 @@ npm run build   # builds the website into dist/
 npm start       # one server: website + /api on http://localhost:8787
 ```
 
+### Deploying on Vercel
+
+The repo is ready for Vercel: `api/index.js` runs the same Express routes as `server/app.js`, and `vercel.json` sends every `/api/...` request to it.
+
+1. Import the repo in Vercel (framework preset: **Vite**; build command `npm run build`; output folder `dist`).
+2. In **Settings → Environment Variables**, add `METEOMATICS_USERNAME` and `METEOMATICS_PASSWORD`.
+3. Redeploy.
+
+Without those two variables the site still works: the weather cards show the saved weather from `public/data/weather-maps.json` instead of live values.
+
 ### Troubleshooting
 
-- **No live weather / "Live weather is offline" banner:** the weather server is not running. Close every old terminal that runs `npm run dev`, then start it once. If port 8787 or 5173 is busy, the terminal now says so instead of quietly using another port.
+- **No live weather / "Live weather is offline" banner (only shown in `npm run dev`):** the weather server is not running. Close every old terminal that runs `npm run dev`, then start it once. If port 8787 or 5173 is busy, the terminal now says so instead of quietly using another port.
 - **"needs your Meteomatics login" banner:** create `.env` from `.env.example`. Each teammate needs their own copy, because `.env` is not in Git.
 
 ### Refreshing the data
@@ -75,7 +87,8 @@ All map pictures are saved ahead of time in `public/data/`. The website does not
 
 ```
 Browser (React + MapLibre + deck.gl)
-   │  /api/series, /api/now, /api/spot ──► server/index.js ──► Meteomatics API   (password stays on the server)
+   │  /api/series, /api/now, /api/spot ──► server/app.js ──► Meteomatics API   (password stays on the server)
+   │                                       (run by server/index.js locally, api/index.js on Vercel)
    └─ /data/* pictures and JSON (pre-computed by scripts/ from ASF, NASA GIBS and Meteomatics)
 ```
 
@@ -133,7 +146,8 @@ Measure **land subsidence** with interferometry (GUNW products), track **mangrov
 ## Project layout
 
 ```
-server/      Express API proxy (Meteomatics) + GIBS tile cache
+server/      Express API proxy (Meteomatics): app.js = routes, index.js = local server
+api/         Vercel entry point (reuses server/app.js)
 scripts/     NISAR download/analysis and Black Marble scripts
 shared/      Area outlines and layer definitions (used by server, scripts and website)
 src/         React website (map, panels, timeline, checkboxes)

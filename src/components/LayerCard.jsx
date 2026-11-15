@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import Sparkline from './Sparkline.jsx';
 import { loadNow, loadSeries } from '../api.js';
 import { INSIGHTS } from '../data/insights.js';
+import { weatherMean } from '../lib/weatherMaps.js';
+
+// When live weather is not available, these saved Meteomatics maps stand in for the live numbers.
+const SAVED = { 'precip_24h:mm': 'rain', 'evapotranspiration_24h:mm': 'plants', 't_max_2m_24h:C': 'heat', 'pm2p5:ugm3': 'pm25' };
 
 const fmt = (v, digits = 1) => (v === null || v === undefined ? '–' : Number(v).toFixed(digits).replace(/\.0$/, ''));
 const AQ_WORDS = ['Good', 'Fair', 'Moderate', 'Poor', 'Very poor', 'Extremely poor'];
@@ -10,7 +14,10 @@ const fmtDate = (d) => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { 
 function useWeather(region, layer, range) {
   const [state, setState] = useState({ series: null, now: null, error: null });
   useEffect(() => {
-    if (!layer.meteomatics.length || !range) return;
+    if (!layer.meteomatics.length || !range) {
+      setState({ series: null, now: null, error: null });
+      return;
+    }
     let alive = true;
     setState({ series: null, now: null, error: null });
     Promise.all([loadSeries(region.id, layer.id, range.start, range.end), loadNow(region.id, layer.id)])
@@ -27,9 +34,33 @@ function valueText(param, v, unit) {
   return `${fmt(v, param.endsWith(':idx') ? 2 : 1)}${unit ? ' ' + unit : ''}`;
 }
 
-export default function LayerCard({ region, layer, date, nisar, lights, sat }) {
+function SavedWeather({ region, layer, date, nisar, wx }) {
+  const ids = [...new Set(layer.meteomatics.map((m) => SAVED[m.param]).filter((id) => id && wx?.maps?.[id]))];
+  if (!ids.length) return null;
+  return (
+    <section className="weather">
+      <h4>☁️ Weather in the 12 days before this pass <small>(Meteomatics)</small></h4>
+      {ids.map((id) => {
+        const m = wx.maps[id];
+        const pts = nisar.dates.map((d) => ({ x: Date.parse(d.date), y: weatherMean(wx, id, d.date, region.polygon) }));
+        const v = pts.find((p) => p.x === Date.parse(date))?.y;
+        return (
+          <div className="wx-row" key={id}>
+            <div className="wx-top">
+              <span>{m.label}</span>
+              <strong>{v === null || v === undefined ? '–' : `${fmt(v)} ${m.unit}`}</strong>
+            </div>
+            <Sparkline points={pts} marker={Date.parse(date)} color="#94a3b8" height={30} label={m.label} />
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
+export default function LayerCard({ region, layer, date, nisar, lights, sat, wx, liveWeather }) {
   const [open, setOpen] = useState(false);
-  const range = nisar ? { start: nisar.dates[0].date, end: nisar.dates.at(-1).date } : null;
+  const range = nisar && liveWeather ? { start: nisar.dates[0].date, end: nisar.dates.at(-1).date } : null;
   const weather = useWeather(region, layer, range);
   const insight = INSIGHTS[region.id]?.[layer.id];
 
@@ -104,11 +135,15 @@ export default function LayerCard({ region, layer, date, nisar, lights, sat }) {
         </section>
       )}
 
-      {layer.meteomatics.length > 0 && (
+      {/* no live weather (or it failed): show the saved weather instead of an error */}
+      {layer.meteomatics.length > 0 && (!liveWeather || weather.error) && (
+        <SavedWeather region={region} layer={layer} date={date} nisar={nisar} wx={wx} />
+      )}
+
+      {layer.meteomatics.length > 0 && liveWeather && !weather.error && (
         <section className="weather">
           <h4>☁️ Weather & air on this date <small>(Meteomatics)</small></h4>
-          {weather.error && <p className="error">Could not load weather data: {weather.error}</p>}
-          {!weather.error && !weather.series && <p className="loading">Loading…</p>}
+          {!weather.series && <p className="loading">Loading…</p>}
           {weather.series &&
             layer.meteomatics.map((m) => {
               const s = weather.series[m.param] ?? [];

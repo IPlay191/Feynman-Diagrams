@@ -6,7 +6,37 @@ import { FUTURE } from '../data/insights.js';
 
 const rgb = (c) => `rgb(${c.join(',')})`;
 
-function Overview({ onSelect, activeLayers }) {
+const fmtDay = (d) => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+// Plain-language explanation of the "What changed" view
+function ChangeExplainer({ nisar, date, regionId }) {
+  if (!nisar) return null;
+  const first = fmtDay(nisar.dates[0].date);
+  const row = regionId ? nisar.regions[regionId].find((r) => r.date === date) : null;
+  return (
+    <section className="fact change-card">
+      <h3>🔁 What changed since {first}?</h3>
+      <p>
+        NISAR sends a radar signal down and measures how much of it <b>bounces back up</b>, like an echo. When the ground
+        changes, the echo changes too.
+      </p>
+      <p className="legend-key"><i style={{ background: '#3b82f6' }} /><span><b>Blue: less signal came back.</b> Calm water acts like a mirror and sends the signal away. So blue usually means new standing water, or plants that dried out, burned or were cut down.</span></p>
+      <p className="legend-key"><i style={{ background: '#f97316' }} /><span><b>Orange: more signal came back.</b> Leaves, branches and walls bounce the signal back. So orange usually means thicker or wetter plants, new buildings, or water under trees.</span></p>
+      {row && row.bright >= 95 ? (
+        <p className="small-muted">
+          This area is packed with buildings, so the echo is at its strongest on every pass. In this radar picture that
+          makes it look the same every time, even if small things changed.
+        </p>
+      ) : row && row.darkerVsBaseline !== null && (
+        <p className="small-muted">
+          On {fmtDay(date)}: <b>{row.darkerVsBaseline}%</b> of this area sent back less signal and <b>{row.brighterVsBaseline}%</b> sent back more than on {first}.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function Overview({ onSelect, activeLayers, view, nisar, date }) {
   const layers = [...activeLayers].map((id) => LAYERS[id]);
   return (
     <div className="panel-body">
@@ -25,6 +55,7 @@ function Overview({ onSelect, activeLayers }) {
       </div>
 
       <h3>On the map right now</h3>
+      {view === 'change' && <ChangeExplainer nisar={nisar} date={date} />}
       {layers.length === 0 && <p className="hint">Tick a box at the bottom (Flooding, Fires…) to color the map.</p>}
       <ul className="onmap">
         {layers.map((l) => (
@@ -55,15 +86,21 @@ function Overview({ onSelect, activeLayers }) {
   );
 }
 
-export default function SidePanel({ selected, onSelect, spot, onSpot, activeLayers, date, nisar, lights, sat, wx }) {
+export default function SidePanel({ selected, onSelect, spot, onSpot, activeLayers, date, nisar, lights, sat, wx, view, liveWeather }) {
   if (spot && !selected) {
     return (
       <aside className="panel">
-        <SpotPanel spot={spot} date={date} nisar={nisar} sat={sat} wx={wx} onClose={() => onSpot(null)} />
+        <SpotPanel spot={spot} date={date} nisar={nisar} sat={sat} wx={wx} liveWeather={liveWeather} onClose={() => onSpot(null)} />
       </aside>
     );
   }
-  if (!selected) return <aside className="panel"><Overview onSelect={onSelect} activeLayers={activeLayers} /></aside>;
+  if (!selected) {
+    return (
+      <aside className="panel">
+        <Overview onSelect={onSelect} activeLayers={activeLayers} view={view} nisar={nisar} date={date} />
+      </aside>
+    );
+  }
   const r = REGIONS[selected];
   const layers = [...activeLayers].map((id) => LAYERS[id]);
   return (
@@ -73,9 +110,10 @@ export default function SidePanel({ selected, onSelect, spot, onSpot, activeLaye
         <h2 className="region-title"><span className="dot" />{r.name}</h2>
         <p className="tagline">{r.tagline}</p>
         <p className="lead">{r.intro}</p>
+        {view === 'change' && <ChangeExplainer nisar={nisar} date={date} regionId={r.id} />}
         {layers.length === 0 && <p className="hint">Tick a box at the bottom (Flooding, Fires…) to see what is changing here.</p>}
         {layers.map((l) => (
-          <LayerCard key={l.id} region={r} layer={l} date={date} nisar={nisar} lights={lights} sat={sat} />
+          <LayerCard key={l.id} region={r} layer={l} date={date} nisar={nisar} lights={lights} sat={sat} wx={wx} liveWeather={liveWeather} />
         ))}
       </div>
     </aside>

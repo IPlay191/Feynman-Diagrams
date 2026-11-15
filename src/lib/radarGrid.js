@@ -87,37 +87,6 @@ export function changePicture(cur, base, c) {
   return toUrl(img, cur.width, cur.height);
 }
 
-// 3D change blocks: the grid is cut into squares of `size` pixels (~1 km). Each square becomes a
-// column whose height = how much the radar echo changed and color = brighter (orange) / darker (blue).
-// The list of squares depends only on the first pass (land squares), so it is the same for every
-// date; that lets the columns smoothly grow and shrink when the date changes.
-export function changeBlocks(cur, base, c, bounds, step, size = 5) {
-  const out = [];
-  const { width, height } = cur;
-  for (let by = 0; by < height; by += size) {
-    for (let bx = 0; bx < width; bx += size) {
-      let sum = 0, n = 0, land = 0;
-      for (let y = by; y < Math.min(by + size, height); y++) {
-        for (let x = bx; x < Math.min(bx + size, width); x++) {
-          const i = y * width + x;
-          if (!base.valid[i] || classify(base.hh[i], base.hv[i], c) === 'water') continue;
-          land++;
-          if (!cur.valid[i]) continue;
-          sum += echo(cur, i) - echo(base, i);
-          n++;
-        }
-      }
-      if (land < (size * size) / 3) continue;
-      out.push({
-        id: by * width + bx, // stable id so deck.gl can animate each block between dates
-        position: [bounds.west + (bx + size / 2) * step, bounds.north - (by + size / 2) * step],
-        change: n ? sum / n : 0,
-      });
-    }
-  }
-  return out;
-}
-
 // Reading for one spot, in plain words.
 export function readSpot(cur, base, c, bounds, step, lon, lat) {
   const x = Math.floor((lon - bounds.west) / step);

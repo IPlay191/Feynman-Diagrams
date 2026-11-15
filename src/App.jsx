@@ -105,19 +105,31 @@ export default function App() {
   };
 
   // ---- legend ----
+  const is3d = effectiveMode === '3d';
+  const first = fmtShort(dates[0] ?? date);
   const legendItems = [];
   for (const id of active) {
     const m = LAYERS[id].map;
-    if (m.radar === 'water') legendItems.push({ sw: '#2563eb', t: 'Open water (NISAR)' }, { sw: '#22d3ee', t: `New water since ${fmtShort(dates[0] ?? date)}` });
-    if (m.radar === 'plants') legendItems.push({ sw: '#22c55e', t: 'Plants (NISAR)' }, { sw: '#b45309', t: 'Plants lost since first pass' });
-    if (m.sat === 'fires') legendItems.push({ sw: '#ff4500', t: 'Fire spotted (VIIRS, 12 days)' });
-    if (m.sat === 'lights') legendItems.push({ sw: '#facc15', t: 'Night lights (Black Marble)' });
+    if (m.radar === 'water') {
+      legendItems.push({ sw: '#2563eb', t: 'Open water (NISAR)' });
+      legendItems.push({ sw: '#22d3ee', t: is3d ? `New water since ${first} (taller = more of the ground flooded)` : `New water since ${first}` });
+    }
+    if (m.radar === 'plants') {
+      legendItems.push({ sw: '#22c55e', t: is3d ? 'Plants (NISAR, taller = more plant cover)' : 'Plants (NISAR)' });
+      legendItems.push({ sw: '#b45309', t: `Plants lost since ${first}` });
+    }
+    if (m.sat === 'fires') legendItems.push({ sw: '#ff4500', t: is3d ? 'Fire spotted in the 12 days before (taller = more fires)' : 'Fire spotted (VIIRS, 12 days)' });
+    if (m.sat === 'lights') legendItems.push({ sw: '#facc15', t: is3d ? 'Night lights (taller = brighter at night)' : 'Night lights (Black Marble)' });
+    if (id === 'smog' && is3d) legendItems.push({ sw: '#8b5cf6', t: 'Fine particles PM2.5 (taller = dirtier air)' });
     if (m.weather && wx?.maps?.[m.weather]) {
       const w = wx.maps[m.weather];
       legendItems.push({ ramp: RAMP_CSS[m.weather], t: `${w.label}`, range: `${Math.round(w.min)}–${Math.round(w.max)} ${w.unit}` });
     }
   }
   const photoDate = sat?.dates[date]?.photoDate;
+
+  // "What changed" numbers for the selected area (share of the area that got a weaker / stronger echo)
+  const changeRow = selected && nisar ? nisar.regions[selected].find((r) => r.date === date) : null;
 
   return (
     <div className={`app ${lowQuality ? 'lq' : ''}`}>
@@ -178,9 +190,28 @@ export default function App() {
             )}
             {view === 'change' && (
               <>
-                <strong>Radar echo vs. {fmtShort(dates[0] ?? date)}</strong>
-                <span><i style={{ background: '#f97316' }} /> Stronger {effectiveMode === '3d' ? '(taller = more change)' : ''}</span>
-                <span><i style={{ background: '#3b82f6' }} /> Weaker: more water, fewer plants</span>
+                <strong>What changed since {first}</strong>
+                <span className="small-muted legend-note">
+                  NISAR sends a radar signal down and measures how much of it bounces back up, like an echo.
+                </span>
+                <span className="legend-key">
+                  <i style={{ background: '#3b82f6' }} />
+                  <span><b>Less signal came back.</b> Usually new standing water (flooding), or plants that dried out, burned or were cut down.</span>
+                </span>
+                <span className="legend-key">
+                  <i style={{ background: '#f97316' }} />
+                  <span><b>More signal came back.</b> Usually thicker or wetter plants, new buildings, or water under trees.</span>
+                </span>
+                {is3d && <span className="small-muted">Taller block = bigger change. No block = about the same.</span>}
+                {changeRow && changeRow.bright >= 95 ? (
+                  <span className="legend-stat">
+                    {REGIONS[selected].name} is so full of buildings that the echo is always at its strongest, so this picture shows no change here.
+                  </span>
+                ) : changeRow && changeRow.darkerVsBaseline !== null && (
+                  <span className="legend-stat">
+                    In {REGIONS[selected].name}: <b>{changeRow.darkerVsBaseline}%</b> less signal · <b>{changeRow.brighterVsBaseline}%</b> more signal
+                  </span>
+                )}
               </>
             )}
             {view === 'photo' && (
@@ -210,12 +241,13 @@ export default function App() {
           </div>
 
           {loadError && <div className="banner">{loadError}</div>}
-          {!loadError && (server === 'offline' || server === 'no-credentials') && (
+          {/* Setup hints are for the team only (npm run dev); visitors of the live site never see them. */}
+          {import.meta.env.DEV && !loadError && (server === 'offline' || server === 'no-credentials') && (
             <div className="banner warn">
               {server === 'offline'
-                ? 'Live weather is offline. Start the site with "npm run dev" so the weather server runs too.'
-                : 'Live weather needs your Meteomatics login: add it to the .env file (see .env.example) and restart.'}
-              {' '}The maps still work.
+                ? 'Dev note: the weather server is not running. Close old terminals and run "npm run dev" once.'
+                : 'Dev note: add your Meteomatics login to .env (see .env.example) and restart.'}
+              {' '}Saved weather is shown instead.
             </div>
           )}
         </section>
@@ -231,6 +263,8 @@ export default function App() {
           lights={lights}
           sat={sat}
           wx={wx}
+          view={view}
+          liveWeather={server === 'ok'}
         />
       </main>
 

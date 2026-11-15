@@ -13,7 +13,7 @@ const fmtDate = (d) => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { 
 const fmt = (v, u) => (v === null || v === undefined ? '–' : `${Math.round(v * 10) / 10} ${u}`);
 
 // Simple facts for any place someone clicks outside the three colored areas.
-export default function SpotPanel({ spot, date, nisar, sat, wx, onClose }) {
+export default function SpotPanel({ spot, date, nisar, sat, wx, liveWeather, onClose }) {
   const [radar, setRadar] = useState(null);
   const [now, setNow] = useState({ state: 'loading' });
   const [nearFire, setNearFire] = useState(null);
@@ -30,12 +30,16 @@ export default function SpotPanel({ spot, date, nisar, sat, wx, onClose }) {
 
   useEffect(() => {
     let alive = true;
+    if (!liveWeather) {
+      setNow({ state: 'off' });
+      return;
+    }
     setNow({ state: 'loading' });
     loadSpotNow(spot.lat, spot.lon)
       .then((r) => alive && setNow({ state: 'ok', v: r.values }))
       .catch(() => alive && setNow({ state: 'error' }));
     return () => { alive = false; };
-  }, [spot]);
+  }, [spot, liveWeather]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Any fire detection within ~5 km in the 12 days before this date?
   useEffect(() => {
@@ -64,11 +68,12 @@ export default function SpotPanel({ spot, date, nisar, sat, wx, onClose }) {
 
   const kind = radar ? KIND[radar.kind] : null;
   const change = radar?.change;
+  const firstDay = base ? fmtDate(base) : 'the first pass';
   const changeText =
     change === null || change === undefined ? null
-      : Math.abs(change) < 15 ? 'About the same as on the first pass.'
-        : change < 0 ? 'Darker echo than on the first pass: maybe more water or fewer plants.'
-          : 'Stronger echo than on the first pass: maybe wetter plants or new structures.';
+      : Math.abs(change) < 15 ? `The radar signal bouncing back is about the same as on ${firstDay}.`
+        : change < 0 ? `Less radar signal bounced back than on ${firstDay}. That usually means new standing water, or plants that dried out, burned or were cut down.`
+          : `More radar signal bounced back than on ${firstDay}. That usually means thicker or wetter plants, new buildings, or water under trees.`;
   const rain = wx?.maps?.rain ? weatherAt(wx, 'rain', date, spot.lon, spot.lat) : null;
   const heat = wx?.maps?.heat ? weatherAt(wx, 'heat', date, spot.lon, spot.lat) : null;
   const pm = wx?.maps?.pm25 ? weatherAt(wx, 'pm25', date, spot.lon, spot.lat) : null;
@@ -102,10 +107,9 @@ export default function SpotPanel({ spot, date, nisar, sat, wx, onClose }) {
         </ul>
       </section>
 
-      <section className="fact">
+      {now.state !== 'off' && now.state !== 'error' && <section className="fact">
         <h3>⏱️ Right now</h3>
         {now.state === 'loading' && <p className="small-muted">Loading…</p>}
-        {now.state === 'error' && <p className="error">Live weather is not available. Is the server running (npm run dev)?</p>}
         {now.state === 'ok' && (
           <ul className="facts">
             <li><span>Temperature</span><strong>{fmt(cur('t_2m:C'), '°C')}</strong></li>
@@ -113,7 +117,7 @@ export default function SpotPanel({ spot, date, nisar, sat, wx, onClose }) {
             <li><span>Air quality</span><strong>{cur('air_quality:idx') === undefined ? '–' : AQ[cur('air_quality:idx')]}</strong></li>
           </ul>
         )}
-      </section>
+      </section>}
       <p className="hint">Tip: click one of the colored areas for the full story of that place.</p>
     </div>
   );

@@ -4,8 +4,10 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ColumnLayer, GeoJsonLayer, ScatterplotLayer, SolidPolygonLayer, TextLayer } from '@deck.gl/layers';
 import { REGIONS, OVERVIEW_CAMERA, STUDY_BOUNDS, CITY_BOUNDS, SOUTH_FL_BOUNDS, boundsToCorners, inBounds } from '../../shared/regions.js';
 import { LAYERS } from '../../shared/layers.js';
-import { loadGrid, waterPicture, plantsPicture, changePicture, changeBlocks } from '../lib/radarGrid.js';
+import { loadGrid, waterPicture, plantsPicture, changePicture } from '../lib/radarGrid.js';
 import { weatherPicture } from '../lib/weatherMaps.js';
+import { radarColumns, fireColumns, lightColumns, weatherColumns } from '../lib/columns3d.js';
+import { clipPicture, cornersToBounds } from '../lib/clip.js';
 
 const STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
 const EMPTY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
@@ -14,6 +16,7 @@ const CITY = boundsToCorners(CITY_BOUNDS);
 const SF = SOUTH_FL_BOUNDS;
 const WORLD = [[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]];
 const SF_RING = [[SF.west, SF.south], [SF.east, SF.south], [SF.east, SF.north], [SF.west, SF.north], [SF.west, SF.south]];
+const COS_LAT = Math.cos((25.6 * Math.PI) / 180);
 
 const WATER_LABELS = [
   { text: 'Gulf of Mexico', position: [-81.42, 25.45] },
@@ -52,7 +55,7 @@ function cameraFor(regionId, mode) {
 
 // Pictures made from radar grids are cached so moving the timeline back and forth is instant.
 const pictureCache = new Map();
-async function radarPicture(kind, date, baseDate, classes) {
+function radarPicture(kind, date, baseDate, classes) {
   const key = `${kind}:${date}`;
   if (!pictureCache.has(key)) {
     pictureCache.set(key, (async () => {
@@ -66,7 +69,7 @@ async function radarPicture(kind, date, baseDate, classes) {
 }
 
 // Fire detections are single pixels; draw each as a bigger dot with a dark ring so it is easy to see.
-async function firePicture(date) {
+function firePicture(date) {
   const key = `fires:${date}`;
   if (!pictureCache.has(key)) {
     pictureCache.set(key, (async () => {
@@ -100,6 +103,26 @@ async function firePicture(date) {
   return pictureCache.get(key);
 }
 
+// How each set of 3D columns looks. Heights are in meters (before elevationScale).
+const STYLES = {
+  change: {
+    elev: (v, c) => (Math.abs(v) < c.changeMin ? 0 : (Math.abs(v) - 25) * 60),
+    color: (v, c) => (Math.abs(v) < c.changeMin ? [0, 0, 0, 0] : v > 0 ? [249, 115, 22, 235] : [59, 130, 246, 235]),
+  },
+  // only squares where at least a fifth of the ground is newly flooded, so the map stays readable
+  water: { elev: (v) => (v < 0.2 ? 0 : v * 4000), color: (v) => (v < 0.2 ? [0, 0, 0, 0] : [34, 211, 238, 225]) },
+  plants: {
+    // extra = share of the square that LOST its plants since the first pass
+    elev: (v, _c, extra) => (extra > 0.25 ? extra * 2500 : v < 0.05 ? 0 : v * 2500),
+    color: (v, _c, extra) => (extra > 0.25 ? [180, 83, 9, 235] : v < 0.05 ? [0, 0, 0, 0] : [34, 197, 94, 215]),
+  },
+  fires: { elev: (v) => Math.min(9000, 2500 + v * 81 * 600), color: () => [255, 69, 0, 245] },
+  // squared, so the brightest spots stand out from the merely lit ones
+  lights: { elev: (v) => v * v * 8000, color: () => [250, 204, 21, 225] },
+  // kept low and see-through, because these squares are large and sit over everything else
+  pm25: { elev: (v) => 200 + v * 3000, color: () => [139, 92, 246, 110] },
+};
+
 export default function MapView({ mode, selected, onSelect, spot, onSpot, date, view, active, lowQuality, nisar, sat, wx }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
@@ -108,9 +131,10 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
   const shownRef = useRef({}); // source id -> url currently shown
   const tokenRef = useRef({}); // source id -> latest request (ignore stale ones)
   const [ready, setReady] = useState(false);
-  const [blocks, setBlocks] = useState(null);
+  const [cols, setCols] = useState({});
   const latest = useRef({});
   latest.current = { onSelect, onSpot };
+  const use3d = mode === '3d' && !lowQuality;
 
   // ---------- create the map once ----------
   useEffect(() => {
@@ -133,7 +157,7 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
 
     // deck.gl draws on its own canvas above the map (not mixed into the map's depth buffer),
     // so its shapes can never "fight" with map layers and flicker.
-    const overlay = new MapboxOverlay({ interleaved: false, layers: [] });
+    const overlay = new MapboxOverlay({ interleaved: false, layers: [], useDevicePixels: !lowQuality });
     overlayRef.current = overlay;
     map.addControl(overlay);
 
@@ -148,7 +172,7 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
             source: L.id,
             ...(L.minzoom ? { minzoom: L.minzoom } : {}),
             layout: { visibility: 'none' },
-            paint: { 'raster-opacity': L.opacity ?? 1, 'raster-fade-duration': 0, 'raster-resampling': L.nearest ? 'nearest' : 'linear' },
+            paint: { 'raster-opacity': L.opacity ?? 1, 'raster-fade-duration': 0 },
           },
           before,
         );
@@ -234,7 +258,7 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
     img.decode().then(
       () => {
         if (tokenRef.current[id] !== token || !mapRef.current) return;
-        map.getSource(id).updateImage({ url, ...(corners ? { coordinates: corners } : {}) });
+        map.getSource(id).updateImage({ url, coordinates: corners });
         shownRef.current[id] = url;
         map.setLayoutProperty(id, 'visibility', 'visible');
       },
@@ -247,16 +271,28 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
     const map = mapRef.current;
     const base = nisar.dates[0].date;
     const classes = nisar.classes;
-    const blocks3d = view === 'change' && mode === '3d' && !lowQuality;
     let alive = true;
 
+    // Puts a picture on the map. When an area is selected, the picture is first cut down to
+    // that area, so nothing from the other areas shows.
+    const put = (id, src, corners = STUDY, opts) => {
+      tokenRef.current[id] = (tokenRef.current[id] ?? 0) + 1; // cancel older requests right away
+      Promise.resolve(src)
+        .then((u) => {
+          if (!alive) return;
+          if (!u) return show(id, null);
+          if (!selected) return show(id, u, corners);
+          return clipPicture(u, cornersToBounds(corners), selected, opts).then((c) => alive && show(id, c?.url ?? null, c?.corners));
+        })
+        .catch(() => alive && show(id, null));
+    };
+
     // base picture
-    show('photo', view === 'photo' && sat?.dates[date]?.photoDate ? `/data/sat/photo/${date}.jpg` : null);
-    show('radar-local', view === 'radar' ? `/data/nisar/radar/${date}.webp` : null);
-    show('radar-city', view === 'radar' && !lowQuality && sat?.dates[date]?.cityOk ? `/data/sat/city/${date}.webp` : null);
-    if (view === 'change') radarPicture('change', date, base, classes).then((u) => alive && show('change-flat', u));
-    else show('change-flat', null);
-    map.setPaintProperty('change-flat', 'raster-opacity', blocks3d ? 0.35 : 0.9);
+    put('photo', view === 'photo' && sat?.dates[date]?.photoDate ? `/data/sat/photo/${date}.jpg` : null);
+    put('radar-local', view === 'radar' ? `/data/nisar/radar/${date}.webp` : null);
+    put('radar-city', view === 'radar' && !lowQuality && sat?.dates[date]?.cityOk ? `/data/sat/city/${date}.webp` : null, CITY);
+    put('change-flat', view === 'change' ? radarPicture('change', date, base, classes) : null, STUDY, { smooth: false });
+    map.setPaintProperty('change-flat', 'raster-opacity', view === 'change' && use3d ? 0.35 : 0.9);
 
     // what each ticked box adds
     const want = { water: false, plants: false, rain: false, wplants: false, heat: false, pm25: false, fires: false, lights: false };
@@ -266,33 +302,48 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
       if (m.weather) want[m.weather === 'plants' ? 'wplants' : m.weather] = true;
       if (m.sat) want[m.sat] = true;
     }
-    for (const [kind, on] of [['water', want.water], ['plants', want.plants]]) {
-      if (on) radarPicture(kind, date, base, classes).then((u) => alive && show(`mask-${kind}`, u));
-      else show(`mask-${kind}`, null);
-    }
+    // In 3D, columns replace the flat plants map and the fire dots (the flat water map stays as the "ground").
+    put('mask-water', want.water ? radarPicture('water', date, base, classes) : null, STUDY, { smooth: false });
+    put('mask-plants', want.plants && !use3d ? radarPicture('plants', date, base, classes) : null, STUDY, { smooth: false });
     for (const [id, on] of [['rain', want.rain], ['plants', want.wplants], ['heat', want.heat], ['pm25', want.pm25]]) {
       const pic = on && wx?.maps?.[id] ? weatherPicture(wx, id, date) : null;
-      show(`wx-${id}`, pic?.url ?? null, pic?.corners);
+      put(`wx-${id}`, pic?.url ?? null, pic?.corners);
     }
-    if (want.fires) firePicture(date).then((u) => alive && show('fires', u));
-    else show('fires', null);
-    show('lights', want.lights ? `/data/sat/lights/${date}.webp` : null);
-    map.setLayoutProperty('buildings-3d', 'visibility', mode === '3d' && !lowQuality ? 'visible' : 'none');
-
-    // 3D change blocks
-    if (blocks3d) {
-      Promise.all([loadGrid(date), loadGrid(base)]).then(([cur, b]) => {
-        if (alive) setBlocks(changeBlocks(cur, b, classes, nisar.studyBounds, nisar.grid.step));
-      });
-    } else setBlocks(null);
+    map.setPaintProperty('wx-pm25', 'raster-opacity', use3d ? 0.45 : 0.85);
+    put('fires', want.fires && !use3d ? firePicture(date) : null, STUDY, { smooth: false });
+    put('lights', want.lights ? `/data/sat/lights/${date}.webp` : null);
+    map.setLayoutProperty('buildings-3d', 'visibility', use3d ? 'visible' : 'none');
 
     // load the next date in the background so playing the timeline is smooth
     const i = nisar.dates.findIndex((d) => d.date === date);
-    const next = nisar.dates[(i + 1) % nisar.dates.length].date;
-    loadGrid(next).catch(() => {});
+    loadGrid(nisar.dates[(i + 1) % nisar.dates.length].date).catch(() => {});
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, nisar, sat, wx, date, view, active, mode, lowQuality]);
+  }, [ready, nisar, sat, wx, date, view, active, use3d, lowQuality, selected]);
+
+  // ---------- 3D columns (worked out once per date and area, then reused) ----------
+  useEffect(() => {
+    if (!nisar || !use3d) {
+      setCols({});
+      return;
+    }
+    let alive = true;
+    const poly = selected ? REGIONS[selected].polygon : null;
+    const jobs = {};
+    if (view === 'change') jobs.change = radarColumns('change', date, nisar, selected, poly);
+    for (const id of active) {
+      const m = LAYERS[id].map;
+      if (m.radar) jobs[m.radar] = radarColumns(m.radar, date, nisar, selected, poly);
+      if (m.sat === 'fires' && sat) jobs.fires = fireColumns(date, sat, selected, poly);
+      if (m.sat === 'lights' && sat) jobs.lights = lightColumns(date, nisar, sat, selected, poly);
+      if (id === 'smog' && wx?.maps?.pm25) jobs.pm25 = weatherColumns(wx, 'pm25', date, selected, poly);
+    }
+    const keys = Object.keys(jobs);
+    Promise.all(keys.map((k) => jobs[k].catch(() => null))).then((res) => {
+      if (alive) setCols(Object.fromEntries(keys.map((k, i) => [k, res[i]]).filter(([, v]) => v && v.cells.length)));
+    });
+    return () => { alive = false; };
+  }, [nisar, sat, wx, date, view, active, selected, use3d]);
 
   // ---------- region tags ----------
   useEffect(() => {
@@ -306,33 +357,48 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
-    const features = Object.values(REGIONS).map((r) => ({
-      type: 'Feature',
-      properties: { id: r.id, color: r.color },
-      geometry: { type: 'Polygon', coordinates: [r.polygon] },
-    }));
+    // when an area is selected, only its own outline is drawn
+    const features = Object.values(REGIONS)
+      .filter((r) => !selected || r.id === selected)
+      .map((r) => ({ type: 'Feature', properties: { id: r.id, color: r.color }, geometry: { type: 'Polygon', coordinates: [r.polygon] } }));
+    const hasCols = Object.keys(cols).length > 0;
     const busy = view !== 'plain' || active.size > 0;
-    const extrude = mode === '3d' && !selected && !lowQuality && view !== 'change';
-    const step = nisar?.grid.step ?? 0.0018;
+    const extrude = use3d && !selected && !hasCols;
+    const classes = nisar?.classes ?? { changeMin: 35 };
+    // small city areas use 200 m squares, so their columns are drawn shorter
+    const small = selected === 'downtown' || selected === 'miamibeach';
+    const hScale = small ? 0.04 : 1;
+
+    // Radar-based column sets share the same squares: put them side by side, like a bar chart.
+    const radarKinds = ['change', 'water', 'plants'].filter((k) => cols[k]);
 
     const layers = [];
-    if (blocks) {
+    for (const [kind, d] of Object.entries(cols)) {
+      const s = STYLES[kind];
+      const slot = radarKinds.indexOf(kind);
+      const n = slot >= 0 ? radarKinds.length : 1;
+      const sideDeg = d.size / (111_320 * COS_LAT);
+      const off = slot >= 0 && n > 1 ? sideDeg * ((slot + 0.5) / n - 0.5) : 0;
       layers.push(
         new ColumnLayer({
-          id: 'change-blocks',
-          data: blocks,
+          id: `cols-${kind}`,
+          data: d.cells,
           diskResolution: 4,
           angle: 45,
-          radius: (5 * step * 111_000) / 2 * 0.9 * Math.SQRT2,
+          flatShading: true,
           extruded: true,
-          getPosition: (d) => d.position,
-          // only real changes get height; everything else lies flat (and grows when it changes)
-          getElevation: (d) => (Math.abs(d.change) < (nisar?.classes.changeMin ?? 35) ? 0 : (Math.abs(d.change) - 25) * 60),
-          getFillColor: (d) =>
-            Math.abs(d.change) < (nisar?.classes.changeMin ?? 35) ? [148, 163, 184, 0] : d.change > 0 ? [249, 115, 22, 235] : [59, 130, 246, 235],
-          material: { ambient: 0.55, diffuse: 0.6, shininess: 16 },
-          transitions: { getElevation: { duration: 900 }, getFillColor: { duration: 600 } },
-          updateTriggers: { getElevation: date, getFillColor: date },
+          pickable: false,
+          radius: (d.size / 2) * Math.SQRT2 / n,
+          // thinner columns in the small city areas leave gaps so the streets show through
+          coverage: kind === 'pm25' || kind === 'lights' || small ? 0.7 : 0.88,
+          elevationScale: hScale,
+          getPosition: off ? (c) => [c.position[0] + off, c.position[1]] : (c) => c.position,
+          getElevation: (_, { index }) => s.elev(d.values[index], classes, d.extra?.[index]),
+          getFillColor: (_, { index }) => s.color(d.values[index], classes, d.extra?.[index]),
+          material: { ambient: 0.55, diffuse: 0.6, shininess: 12 },
+          // the squares stay the same between dates, so the columns can grow and shrink smoothly
+          transitions: kind === 'fires' ? undefined : { getElevation: { duration: 700 } },
+          updateTriggers: { getElevation: [d.values, n], getFillColor: [d.values], getPosition: [off] },
         }),
       );
     }
@@ -342,7 +408,7 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
           id: 'focus-mask',
           data: [{ polygon: [WORLD, REGIONS[selected].polygon] }],
           getPolygon: (d) => d.polygon,
-          getFillColor: [6, 11, 22, 165],
+          getFillColor: [6, 11, 22, 190],
         }),
       );
     }
@@ -355,14 +421,14 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
         filled: true,
         extruded: extrude,
         getElevation: (f) => ({ everglades: 1800, downtown: 700, miamibeach: 700 })[f.properties.id],
-        getFillColor: (f) => [...f.properties.color, selected ? (f.properties.id === selected ? 0 : 40) : busy ? 25 : 120],
-        getLineColor: (f) => [...f.properties.color, selected && f.properties.id !== selected ? 110 : 255],
+        getFillColor: (f) => [...f.properties.color, selected ? 0 : busy ? 25 : 120],
+        getLineColor: (f) => [...f.properties.color, 255],
         getLineWidth: (f) => (f.properties.id === selected ? 3 : 2),
         lineWidthUnits: 'pixels',
         material: { ambient: 0.6, diffuse: 0.5, shininess: 8 },
         autoHighlight: !selected && !lowQuality,
         highlightColor: [255, 255, 255, 40],
-        updateTriggers: { getFillColor: [selected, busy], getLineColor: [selected], getLineWidth: [selected] },
+        updateTriggers: { getFillColor: [selected, busy], getLineWidth: [selected] },
       }),
       new TextLayer({
         id: 'water-labels',
@@ -392,7 +458,7 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
       );
     }
     overlay.setProps({ layers, getCursor: ({ isHovering }) => (isHovering ? 'pointer' : 'crosshair') });
-  }, [selected, mode, view, active, lowQuality, blocks, spot, date, nisar]);
+  }, [selected, view, active, lowQuality, use3d, cols, spot, nisar]);
 
   return <div ref={containerRef} className="map" role="application" aria-label="Map of South Florida" />;
 }
