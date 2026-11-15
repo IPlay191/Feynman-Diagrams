@@ -1,6 +1,7 @@
 // "Other perspective": earthquakes in La Guaira, Venezuela, seen by NISAR. Loaded only when the
 // visitor switches to it; South Florida is unloaded meanwhile.
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ALARM_LEVEL, QuakeSonifier } from './quakeSound.js';
 import LaGuairaMap from './LaGuairaMap.jsx';
 import LaGuairaPanel from './LaGuairaPanel.jsx';
 import SourcesPanel from '../components/SourcesPanel.jsx';
@@ -17,12 +18,25 @@ function initialLowQuality() {
   return (navigator.deviceMemory && navigator.deviceMemory <= 4) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || false;
 }
 
-function Timeline({ pairs, quakes, index, onChange, playing, onPlay }) {
+// How much the ground moved in a 12-day comparison, from 0 (still) to 1 (huge).
+// Where NISAR's movement was measured in cm, that number is used (60 cm or more = 1).
+// Elsewhere it is estimated from the strongest quake in those days.
+function levelFor(data, pair) {
+  if (!pair) return 0;
+  const m = pair.movement ? data.movement[pair.movement] : null;
+  if (m?.typical != null) return Math.min(1, m.typical / 60);
+  const mags = data.quakes.filter((q) => pair.quakes.includes(q.id)).map((q) => q.mag);
+  if (!mags.length) return 0;
+  return Math.min(1, Math.max(0, (Math.max(...mags) - 2.5) / 5));
+}
+
+function Timeline({ pairs, quakes, index, onChange, playing, onPlay, stepMs, soundOn, onSound, onInteract }) {
+  // one step per comparison; the alarm steps stay on screen longer
   useEffect(() => {
     if (!playing) return;
-    const t = setInterval(() => onChange((i) => (i + 1) % pairs.length), 1600);
-    return () => clearInterval(t);
-  }, [playing, pairs.length, onChange]);
+    const t = setTimeout(() => onChange((i) => (i + 1) % pairs.length), stepMs(index));
+    return () => clearTimeout(t);
+  }, [playing, index, pairs.length, onChange, stepMs]);
   const p = pairs[index];
   // quake marks along the slider (taller = stronger), placed at the first step that shows the quake
   const n = pairs.length - 1;
@@ -32,6 +46,9 @@ function Timeline({ pairs, quakes, index, onChange, playing, onPlay }) {
   return (
     <div className="timeline">
       <button className="play" onClick={onPlay} aria-label={playing ? 'Pause' : 'Play through time'}>{playing ? '❚❚' : '▶'}</button>
+      <button className={`sound ${soundOn ? 'on' : ''}`} onClick={onSound} aria-pressed={soundOn} title="Hear the ground move">
+        {soundOn ? '🔊 Sound on' : '🔇 Sound off'}
+      </button>
       <div className="tl-main">
         <div className="tl-labels">
           <span>{fmt(pairs[0].to, { month: 'short', year: 'numeric' })}</span>
@@ -39,14 +56,22 @@ function Timeline({ pairs, quakes, index, onChange, playing, onPlay }) {
           <span>{fmt(pairs.at(-1).to, { month: 'short', year: 'numeric' })}</span>
         </div>
         <div className="tl-track">
-          <input type="range" min={0} max={pairs.length - 1} value={index} onChange={(e) => onChange(Number(e.target.value))} aria-label="Choose a pair of NISAR passes" />
+          <input
+            type="range" min={0} max={pairs.length - 1} value={index}
+            onPointerDown={onInteract} onKeyDown={onInteract}
+            onChange={(e) => onChange(Number(e.target.value))}
+            aria-label="Choose a pair of NISAR passes"
+          />
           <div className="tl-quakes" aria-hidden>
             {marks.map(({ q, i }) => (
               <i key={q.id} title={`M${q.mag}`} style={{ left: `${(i / n) * 100}%`, height: `${4 + (q.mag - 2.5) * 3}px` }} />
             ))}
           </div>
         </div>
-        <div className="sound-help">Red marks = earthquakes. Taller mark = stronger quake.</div>
+        <div className="sound-help">
+          Red marks = earthquakes. Taller mark = stronger quake.
+          {soundOn && ' · Sound: soft hum = calm ground · thump = earthquake · siren = the ground moved a lot'}
+        </div>
       </div>
     </div>
   );
@@ -63,6 +88,16 @@ export default function LaGuairaApp({ onSwitch }) {
   const [lowQuality, setLowQuality] = useState(initialLowQuality);
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [keyOpen, setKeyOpen] = useState(() => window.innerHeight >= 800);
+  const [soundOn, setSoundOn] = useState(true);
+  const sound = useRef(null);
+  // sound can only start after a click or drag (browser rule)
+  const wakeSound = useCallback(() => {
+    if (!soundOn) return;
+    sound.current ??= new QuakeSonifier();
+    sound.current.start();
+  }, [soundOn]);
+  // switching back to South Florida stops and frees the audio
+  useEffect(() => () => sound.current?.close(), []);
 
   useEffect(() => {
     fetch('/data/laguaira.json')
@@ -84,7 +119,33 @@ export default function LaGuairaApp({ onSwitch }) {
   const effView = view === 'movement' && hasMove ? 'movement' : 'rings';
   const effMode = lowQuality ? '2d' : mode;
 
+  const stepMs = useCallback((i) => (data && levelFor(data, pairs[i]) >= ALARM_LEVEL ? 3200 : 1600), [data, pairs]);
+
+  // one sound per comparison: when playing, right away; when dragging, once the slider stops
+  useEffect(() => {
+    if (!soundOn || !data || !pair || !sound.current?.ready) return;
+    const t = setTimeout(() => {
+      const mags = data.quakes.filter((q) => pair.quakes.includes(q.id)).map((q) => q.mag);
+      sound.current.step({ level: levelFor(data, pair), mags }, (stepMs(index) / 1000) * 0.95);
+    }, playing ? 0 : 140);
+    return () => clearTimeout(t);
+  }, [index, soundOn, data, pair, playing, stepMs]);
+
+  const onPlay = () => {
+    if (!playing) wakeSound();
+    setPlaying((p) => !p);
+  };
+  const onSound = () => {
+    if (soundOn) sound.current?.stop();
+    else {
+      sound.current ??= new QuakeSonifier();
+      sound.current.start();
+    }
+    setSoundOn((s) => !s);
+  };
+
   const pickQuake = (id) => {
+    wakeSound();
     setSelectedQuake(id);
     setPlaying(false);
     const q = data.quakes.find((x) => x.id === id);
@@ -172,7 +233,10 @@ export default function LaGuairaApp({ onSwitch }) {
 
       <footer className="bottom">
         {pairs.length > 0 && (
-          <Timeline pairs={pairs} quakes={data.quakes} index={index} onChange={setIndex} playing={playing} onPlay={() => setPlaying((p) => !p)} />
+          <Timeline
+            pairs={pairs} quakes={data.quakes} index={index} onChange={setIndex} playing={playing} onPlay={onPlay}
+            stepMs={stepMs} soundOn={soundOn} onSound={onSound} onInteract={wakeSound}
+          />
         )}
       </footer>
 
