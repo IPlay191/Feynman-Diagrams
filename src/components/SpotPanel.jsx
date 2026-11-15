@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { loadGrid, readSpot } from '../lib/radarGrid.js';
+import { loadGrid, readSpot, spotEcho } from '../lib/radarGrid.js';
+import Sparkline from './Sparkline.jsx';
 import { weatherAt } from '../lib/weatherMaps.js';
 import { loadSpotNow } from '../api.js';
 
@@ -17,6 +18,7 @@ export default function SpotPanel({ spot, date, nisar, sat, wx, liveWeather, onC
   const [radar, setRadar] = useState(null);
   const [now, setNow] = useState({ state: 'loading' });
   const [nearFire, setNearFire] = useState(null);
+  const [series, setSeries] = useState(null);
   const base = nisar?.dates[0].date;
 
   useEffect(() => {
@@ -66,6 +68,16 @@ export default function SpotPanel({ spot, date, nisar, sat, wx, liveWeather, onC
     return () => { alive = false; };
   }, [spot, date, sat]);
 
+  // radar echo at this spot on every NISAR pass (grids are cached, so this is fast after the first time)
+  useEffect(() => {
+    if (!nisar) return;
+    let alive = true;
+    setSeries(null);
+    Promise.all(nisar.dates.map((d) => loadGrid(d.date).then((g) => ({ x: Date.parse(d.date), y: spotEcho(g, nisar.studyBounds, nisar.grid.step, spot.lon, spot.lat) })).catch(() => null)))
+      .then((pts) => alive && setSeries(pts.filter(Boolean)));
+    return () => { alive = false; };
+  }, [spot, nisar]);
+
   const kind = radar ? KIND[radar.kind] : null;
   const change = radar?.change;
   const firstDay = base ? fmtDate(base) : 'the first pass';
@@ -96,6 +108,19 @@ export default function SpotPanel({ spot, date, nisar, sat, wx, liveWeather, onC
           </>
         ) : <p className="small-muted">No radar data here.</p>}
       </section>
+
+      {kind && (
+        <section className="fact">
+          <h3>📈 This spot over time</h3>
+          {series ? (
+            <>
+              <Sparkline points={series} marker={Date.parse(date)} color="#38bdf8" label="Radar echo at this spot over time" />
+              <div className="metric-foot"><span>{firstDay}</span><span>{fmtDate(nisar.dates.at(-1).date)}</span></div>
+              <p className="small-muted">Higher line = stronger radar echo. A relative scale, good for comparing dates.</p>
+            </>
+          ) : <p className="small-muted">Loading…</p>}
+        </section>
+      )}
 
       <section className="fact">
         <h3>☁️ The 12 days before this pass</h3>

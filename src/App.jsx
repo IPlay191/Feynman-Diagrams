@@ -31,6 +31,7 @@ export default function App({ onSwitch }) {
   const [spot, setSpot] = useState(null);
   const [mode, setMode] = useState('3d');
   const [view, setView] = useState('plain'); // 'radar' | 'change' | 'plain' (visitors start on the plain map)
+  const [pol, setPol] = useState('both'); // radar polarization: 'both' | 'hh' | 'hv'
   const [active, setActive] = useState(() => new Set(['flooding']));
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -162,6 +163,7 @@ export default function App({ onSwitch }) {
             onSpot={pickSpot}
             date={date}
             view={view}
+            pol={pol}
             active={active}
             lowQuality={lowQuality}
             nisar={nisar}
@@ -179,6 +181,13 @@ export default function App({ onSwitch }) {
               <button className={view === 'change' ? 'on' : ''} onClick={() => setView('change')}>What changed</button>
               <button className={view === 'plain' ? 'on' : ''} onClick={() => setView('plain')}>Plain map</button>
             </div>
+            {view === 'radar' && (
+              <div className="seg" role="group" aria-label="Radar polarization">
+                <button className={pol === 'both' ? 'on' : ''} onClick={() => setPol('both')}>Both</button>
+                <button className={pol === 'hh' ? 'on' : ''} onClick={() => setPol('hh')} title="Sent flat, received flat">HH</button>
+                <button className={pol === 'hv' ? 'on' : ''} onClick={() => setPol('hv')} title="Sent flat, received upright">HV</button>
+              </div>
+            )}
           </div>
 
           <div className={`legend ${keyOpen ? '' : 'closed'}`}>
@@ -186,7 +195,19 @@ export default function App({ onSwitch }) {
               {keyOpen ? '▾ Hide map key' : '▸ Show map key'}
             </button>
             {keyOpen && <>
-            {view === 'radar' && (
+            {view === 'radar' && pol !== 'both' && (
+              <>
+                <strong>NISAR {pol.toUpperCase()} only</strong>
+                <span><i style={{ background: '#f1f5f9' }} /> Strong echo</span>
+                <span><i style={{ background: '#111827', border: '1px solid #475569' }} /> Weak echo</span>
+                <span className="small-muted">
+                  {pol === 'hh'
+                    ? 'HH lights up buildings and flooded trees. Calm water is dark.'
+                    : 'HV lights up plants: leaves twist the signal. Water and bare ground are dark.'}
+                </span>
+              </>
+            )}
+            {view === 'radar' && pol === 'both' && (
               <>
                 <strong>NISAR radar colors</strong>
                 <span><i style={{ background: '#3fae49' }} /> Plants</span>
@@ -277,6 +298,7 @@ export default function App({ onSwitch }) {
           soundOn={soundOn}
           onSound={onSound}
           onStep={onStep}
+          noteLabel={`more ${{ water: 'open water', vegetation: 'plants', bright: 'buildings' }[[...active].map((id) => LAYERS[id].nisar.key)[0] ?? 'water']} seen by NISAR in ${selected ? REGIONS[selected].name : 'the Everglades'}`}
         />
         <LayerBar active={active} onToggle={toggle} />
       </footer>

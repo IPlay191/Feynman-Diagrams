@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 const fmt = (d, opts) => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', opts);
 
-export default function Timeline({ dates, index, onChange, playing, onPlay, stepMs, soundOn, onSound, onStep }) {
+export default function Timeline({ dates, index, onChange, playing, onPlay, stepMs, soundOn, onSound, onStep, noteLabel = 'more of what NISAR measures' }) {
   // Animation: step through the 12-day NISAR passes
   useEffect(() => {
     if (!playing) return;
@@ -34,7 +34,9 @@ export default function Timeline({ dates, index, onChange, playing, onPlay, step
         </div>
         <input type="range" min={0} max={dates.length - 1} value={index} onChange={(e) => onChange(Number(e.target.value))} aria-label="Choose a date" />
         {soundOn && (
-          <div className="sound-help">Press ▶ to listen: higher note = more of what the radar measures · taps = rain · buzzy = dirtier air</div>
+          <div className="sound-help">
+            Press ▶ to hear the changes: higher note = {noteLabel} · taps = rain · buzzy = dirtier air (rain and air from Meteomatics weather data)
+          </div>
         )}
       </div>
     </div>

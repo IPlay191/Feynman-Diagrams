@@ -4,7 +4,7 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import { ColumnLayer, GeoJsonLayer, ScatterplotLayer, SolidPolygonLayer, TextLayer } from '@deck.gl/layers';
 import { REGIONS, OVERVIEW_CAMERA, STUDY_BOUNDS, CITY_BOUNDS, SOUTH_FL_BOUNDS, boundsToCorners, inBounds } from '../../shared/regions.js';
 import { LAYERS } from '../../shared/layers.js';
-import { loadGrid, waterPicture, plantsPicture, changePicture } from '../lib/radarGrid.js';
+import { loadGrid, waterPicture, plantsPicture, changePicture, polarPicture } from '../lib/radarGrid.js';
 import { weatherPicture } from '../lib/weatherMaps.js';
 import { radarColumns, fireColumns, lightColumns, weatherColumns } from '../lib/columns3d.js';
 import { clipPicture, cornersToBounds } from '../lib/clip.js';
@@ -59,6 +59,7 @@ function radarPicture(kind, date, baseDate, classes) {
   if (!pictureCache.has(key)) {
     pictureCache.set(key, (async () => {
       const [cur, base] = await Promise.all([loadGrid(date), loadGrid(baseDate)]);
+      if (kind === 'hh' || kind === 'hv') return polarPicture(cur, kind);
       if (kind === 'water') return waterPicture(cur, base, classes);
       if (kind === 'plants') return plantsPicture(cur, base, classes);
       return changePicture(cur, base, classes);
@@ -122,7 +123,7 @@ const STYLES = {
   pm25: { elev: (v) => 200 + v * 3000, color: () => [139, 92, 246, 110] },
 };
 
-export default function MapView({ mode, selected, onSelect, spot, onSpot, date, view, active, lowQuality, nisar, sat, wx }) {
+export default function MapView({ mode, selected, onSelect, spot, onSpot, date, view, pol = 'both', active, lowQuality, nisar, sat, wx }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
@@ -287,8 +288,10 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
     };
 
     // base picture
-    put('radar-local', view === 'radar' ? `/data/nisar/radar/${date}.webp` : null);
-    put('radar-city', view === 'radar' && !lowQuality && sat?.dates[date]?.cityOk ? `/data/sat/city/${date}.webp` : null, CITY);
+    // 'both' = NISAR's color picture (HH and HV together); 'hh' / 'hv' = one polarization in grey
+    const radarSrc = pol === 'both' ? `/data/nisar/radar/${date}.webp` : radarPicture(pol, date, base, classes);
+    put('radar-local', view === 'radar' ? radarSrc : null, STUDY, pol === 'both' ? undefined : { smooth: false });
+    put('radar-city', view === 'radar' && pol === 'both' && !lowQuality && sat?.dates[date]?.cityOk ? `/data/sat/city/${date}.webp` : null, CITY);
     put('change-flat', view === 'change' ? radarPicture('change', date, base, classes) : null, STUDY, { smooth: false });
     map.setPaintProperty('change-flat', 'raster-opacity', view === 'change' && use3d ? 0.35 : 0.9);
 
@@ -317,7 +320,7 @@ export default function MapView({ mode, selected, onSelect, spot, onSpot, date, 
     loadGrid(nisar.dates[(i + 1) % nisar.dates.length].date).catch(() => {});
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, nisar, sat, wx, date, view, active, use3d, lowQuality, selected]);
+  }, [ready, nisar, sat, wx, date, view, pol, active, use3d, lowQuality, selected]);
 
   // ---------- 3D columns (worked out once per date and area, then reused) ----------
   useEffect(() => {

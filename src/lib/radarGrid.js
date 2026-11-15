@@ -72,7 +72,42 @@ export function plantsPicture(cur, base, c) {
   return toUrl(img, cur.width, cur.height);
 }
 
+// One polarization on its own, in grey: white = strong echo, black = weak echo.
+//   HH (sent flat, received flat): bright on buildings and flooded trees, dark on calm water.
+//   HV (sent flat, received upright): bright where leaves and branches scramble the signal (plants).
+export function polarPicture(cur, pol) {
+  const band = cur[pol];
+  // the values bunch up near the top of the scale, so stretch the middle 90% to full black..white
+  const hist = new Uint32Array(256);
+  let n = 0;
+  for (let i = 0; i < band.length; i++) if (cur.valid[i]) { hist[band[i]]++; n++; }
+  const at = (p) => { let s = 0; for (let v = 0; v < 256; v++) { s += hist[v]; if (s >= n * p) return v; } return 255; };
+  const lo = at(0.05), hi = Math.max(at(0.95), lo + 1);
+  const img = new Uint8ClampedArray(cur.width * cur.height * 4);
+  for (let i = 0; i < band.length; i++) {
+    if (!cur.valid[i]) continue;
+    const v = Math.round(Math.min(1, Math.max(0, (band[i] - lo) / (hi - lo))) * 255);
+    img.set([v, v, v, 255], i * 4);
+  }
+  return toUrl(img, cur.width, cur.height);
+}
+
 const echo = (g, i) => (g.hh[i] + g.hv[i]) / 2;
+
+// Radar echo at one spot (3x3 average) for each grid, for a chart over time. Relative, not calibrated.
+export function spotEcho(grid, bounds, step, lon, lat) {
+  const x = Math.floor((lon - bounds.west) / step);
+  const y = Math.floor((bounds.north - lat) / step);
+  let sum = 0, n = 0;
+  for (let dy = -1; dy <= 1; dy++)
+    for (let dx = -1; dx <= 1; dx++) {
+      const xx = x + dx, yy = y + dy;
+      if (xx < 0 || yy < 0 || xx >= grid.width || yy >= grid.height) continue;
+      const i = yy * grid.width + xx;
+      if (grid.valid[i]) { sum += echo(grid, i); n++; }
+    }
+  return n ? sum / n : null;
+}
 
 // Flat change map: orange = stronger radar echo than the first pass, blue = weaker.
 export function changePicture(cur, base, c) {
