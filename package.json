@@ -15,6 +15,7 @@
     "fetch:lights": "node scripts/fetch-lights.js",
     "fetch:satellites": "node scripts/fetch-satellites.js",
     "fetch:weather-maps": "node scripts/fetch-weather-maps.js",
+    "fetch:laguaira": "node --max-old-space-size=6144 scripts/fetch-laguaira.js",
     "fetch:all": "npm run fetch:nisar && npm run fetch:lights && npm run fetch:satellites && npm run fetch:weather-maps"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^6.3.0",
     "concurrently": "^10.0.7",
+    "h5wasm": "^0.10.3",
     "vite": "^8.3.8"
   }
 }

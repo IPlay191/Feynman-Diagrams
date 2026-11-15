@@ -106,3 +106,57 @@ export const SOURCES = [
     ],
   },
 ];
+
+// Resources used by the La Guaira (earthquakes) perspective.
+export const LG_SOURCES = [
+  {
+    group: 'Radar data (NISAR)',
+    items: [
+      {
+        name: 'ASF Data Search Vertex / ASF Search API',
+        url: 'https://search.asf.alaska.edu/',
+        used: 'Found every NISAR L2 GUNW (ground-movement) product over La Guaira: ascending track 61 and descending track 126, Nov 2025 to Oct 2026. Our script downloads their browse pictures, and the full files for the passes around the June 24, 2026 quake, with an Earthdata Login.',
+      },
+      {
+        name: 'NISAR Data User Guide: GUNW product (ASF)',
+        url: 'https://nisar-docs.asf.alaska.edu/',
+        used: 'How the Geocoded Unwrapped Interferogram is made: unwrapped phase on an 80 m grid, coherence, connected components, the ionosphere phase screen (not removed by NISAR, so we remove it), and the water mask.',
+      },
+      {
+        name: 'NASA Earthdata: Creating a Deformation Map',
+        url: 'https://www.earthdata.nasa.gov/learn/data-recipes/unwrapped-interferograms-creating-deformation-map',
+        used: 'The recipe for turning radar phase into centimeters of movement, and for ignoring low-coherence (unreliable) pixels.',
+      },
+    ],
+  },
+  {
+    group: 'Earthquakes',
+    items: [
+      {
+        name: 'USGS Earthquake Catalog (ANSS ComCat)',
+        url: 'https://earthquake.usgs.gov/earthquakes/search/',
+        used: 'Time, place, depth and magnitude of every M2.5+ quake near La Guaira, plus felt reports and shaking intensity. For the M7.5 quake: the fault type (moment tensor) and the largest slip on the fault (finite-fault model).',
+      },
+    ],
+  },
+  {
+    group: 'Map',
+    items: [
+      {
+        name: 'OpenStreetMap (via Nominatim)',
+        url: 'https://www.openstreetmap.org/',
+        used: 'The outline of La Guaira state.',
+      },
+      {
+        name: 'CARTO Dark Matter basemap (© OpenStreetMap contributors)',
+        url: 'https://carto.com/basemaps',
+        used: 'Background map with streets and buildings.',
+      },
+      {
+        name: 'MapLibre GL JS + deck.gl',
+        url: 'https://maplibre.org/',
+        used: 'Open-source libraries that draw the 2D/3D map, the quake markers and the 3D movement columns.',
+      },
+    ],
+  },
+];

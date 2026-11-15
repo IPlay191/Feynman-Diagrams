@@ -29,3 +29,18 @@ export async function downloadProtected(url) {
   if (!res.ok) throw new Error(`Download failed (HTTP ${res.status}): ${url}`);
   return Buffer.from(await res.arrayBuffer());
 }
+
+// Same, but streams straight to a file (for multi-GB products). Writes to "<file>.part" first,
+// so an interrupted download is never mistaken for a finished one.
+export async function downloadProtectedToFile(url, file) {
+  const { createWriteStream } = await import('node:fs');
+  const { rename } = await import('node:fs/promises');
+  const { Readable } = await import('node:stream');
+  const { pipeline } = await import('node:stream/promises');
+  const token = await getEarthdataToken();
+  let res = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, redirect: 'manual' });
+  if (res.status >= 300 && res.status < 400) res = await fetch(res.headers.get('location'));
+  if (!res.ok) throw new Error(`Download failed (HTTP ${res.status}): ${url}`);
+  await pipeline(Readable.fromWeb(res.body), createWriteStream(file + '.part'));
+  await rename(file + '.part', file);
+}

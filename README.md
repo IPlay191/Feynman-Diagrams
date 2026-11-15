@@ -76,6 +76,7 @@ npm run fetch:nisar         # search ASF, download NISAR browse images (~220 MB,
 npm run fetch:lights        # Black Marble night-light values per area
 npm run fetch:satellites    # sharp city radar, true-color photos, fire detections, night-light pictures (NASA GIBS)
 npm run fetch:weather-maps  # Meteomatics weather maps for each pass (needs .env)
+npm run fetch:laguaira      # La Guaira: NISAR GUNW + USGS quakes (~150 MB browse, plus 4 x 2.3 GB .h5 in a temp folder)
 npm run fetch:all           # all of the above, in order
 ```
 
@@ -121,6 +122,17 @@ Daily values at each area's center point: rain, soil moisture, evapotranspiratio
 
 Full explanations and hypotheses are in the app (`src/data/insights.js`).
 
+### Other perspective: La Guaira, Venezuela (earthquakes)
+
+The **🌎 Other perspective: La Guaira** button (top right) unloads South Florida and opens a second map of La Guaira state, which is also reachable at `/#la-guaira`. On **June 24, 2026, a magnitude 7.5 earthquake** struck 20 km west of Catia La Mar. The view shows only earthquakes and ground movement:
+
+- **NISAR rings:** 46 NISAR **GUNW** (Geocoded Unwrapped Interferogram) products from ascending track 61 and descending track 126, cut to La Guaira's land. Each full loop of colors is about 12 cm of movement toward or away from the satellite (half of NISAR's 24.2 cm wavelength).
+- **Ground movement (cm):** `scripts/process-laguaira.js` reads the full `.h5` files for the passes that span the quake on both tracks. It removes the ionosphere delay, ignores water and low-coherence pixels (coherence ≤ 0.3), and measures against ground more than 90 km from the epicenter. Combining the two viewing directions splits the movement into east-west and up-down. North-south movement is left out because radar barely sees it.
+- **Result:** during the quake, the coast from Maiquetía to Caraballeda moved **about 1 to 1.2 m west**, with almost no up or down movement. Over the 12 days before the quake, the same method measured about 8 cm, which is the method's noise level. The direction matches USGS, which classified the quake as sideways (strike-slip) with up to 1.8 m of slip on the fault.
+- **Quakes:** every M2.5+ quake within 35 km from the [USGS catalog](https://earthquake.usgs.gov/earthquakes/search/), on the map and in a clickable list.
+
+We convert phase to movement with movement = −phase × wavelength / 4π, where positive means toward the satellite. The product files don't state that sign, so we checked it against the USGS fault model: the towns sit south of a right-lateral east-west fault, so they should move west, and with this sign the decomposition gives west. GUNW products are PROVISIONAL, so treat these numbers as good estimates, not survey values.
+
 ### What NISAR could do next
 Measure **land subsidence** with interferometry (GUNW products), track **mangrove biomass** after hurricanes, map **floods through storm clouds**, and monitor **Everglades restoration**.
 
@@ -148,6 +160,7 @@ Measure **land subsidence** with interferometry (GUNW products), track **mangrov
 ```
 server/      Express API proxy (Meteomatics): app.js = routes, index.js = local server
 api/         Vercel entry point (reuses server/app.js)
+src/laguaira/ The La Guaira earthquakes view (loaded only when opened)
 scripts/     NISAR download/analysis and Black Marble scripts
 shared/      Area outlines and layer definitions (used by server, scripts and website)
 src/         React website (map, panels, timeline, checkboxes)

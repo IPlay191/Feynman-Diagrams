@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { SOURCES } from '../data/sources.js';
 
-export default function SourcesPanel({ open, onClose, nisar }) {
+export default function SourcesPanel({ open, onClose, nisar, sources = SOURCES, children }) {
   const ref = useRef(null);
   useEffect(() => {
     const d = ref.current;
@@ -17,7 +17,7 @@ export default function SourcesPanel({ open, onClose, nisar }) {
           <h2>Data sources & how we used them</h2>
           <button className="close" onClick={onClose} aria-label="Close">✕</button>
         </header>
-        {SOURCES.map((g) => (
+        {sources.map((g) => (
           <section key={g.group}>
             <h3>{g.group}</h3>
             <ul>
@@ -52,6 +52,7 @@ export default function SourcesPanel({ open, onClose, nisar }) {
             </details>
           </section>
         )}
+        {children}
       </div>
     </dialog>
   );

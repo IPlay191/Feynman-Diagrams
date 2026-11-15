@@ -20,7 +20,7 @@ function initialLowQuality() {
   return (navigator.deviceMemory && navigator.deviceMemory <= 4) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || false;
 }
 
-export default function App() {
+export default function App({ onSwitch }) {
   const [nisar, setNisar] = useState(null);
   const [lights, setLights] = useState(null);
   const [sat, setSat] = useState(null);
@@ -146,6 +146,9 @@ export default function App() {
         <div className="top-actions">
           <button className={`lq-btn ${lowQuality ? 'on' : ''}`} onClick={() => setLowQuality((q) => !q)} aria-pressed={lowQuality}>
             <span className="lq-dot" aria-hidden /> Low Quality Mode: <strong>{lowQuality ? 'ON' : 'OFF'}</strong>
+          </button>
+          <button className="sources-btn switch-btn" onClick={onSwitch} title="Leave South Florida and explore earthquakes in La Guaira, Venezuela">
+            🌎 Other perspective: La Guaira
           </button>
           <button className="sources-btn" onClick={() => setSourcesOpen(true)}>📚 Data sources</button>
         </div>

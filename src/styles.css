@@ -238,3 +238,40 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.25; }
 /* ---------- Focus mode: other areas step back ---------- */
 .region-tag.dim { opacity: 0.35; padding: 2px 10px; }
 .region-tag.dim span { display: none; }
+
+/* ---------- "Other perspective" switch + La Guaira ---------- */
+.switch-btn { border-color: #3b4f72; }
+.loading-screen { display: grid; place-items: center; height: 100vh; color: var(--muted); }
+.lg-tag { --c: #f87171; }
+.quake-card h3 { color: #fca5a5; }
+.alert-red { color: #f87171; text-transform: capitalize; }
+.alert-orange { color: #fb923c; text-transform: capitalize; }
+.alert-yellow { color: #facc15; text-transform: capitalize; }
+.alert-green { color: #4ade80; text-transform: capitalize; }
+
+.move-table { display: flex; flex-direction: column; gap: 4px; font-size: 0.86rem; }
+.mt-head, .mt-row { display: grid; grid-template-columns: 1.15fr 1.25fr 0.9fr; gap: 8px; align-items: center; }
+.mt-head { color: var(--muted); font-size: 0.78rem; }
+.mt-bar { position: relative; display: block; padding: 2px 4px; border-radius: 4px; overflow: hidden; white-space: nowrap; }
+.mt-bar i { position: absolute; inset: 0 auto 0 0; background: #be185d; opacity: 0.55; border-radius: 4px; }
+.mt-bar.before i { background: #64748b; }
+.mt-bar b { position: relative; }
+.checks { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 0.9rem; }
+
+.quake-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.quake-btn { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; background: none; border: 1px solid transparent; border-radius: 8px; padding: 5px 8px; color: var(--text); }
+.quake-btn:hover { border-color: var(--line); background: #18233a; }
+.quake-btn.on { border-color: #f8fafc; }
+.quake-btn.now .qmag { background: #ef4444; color: #fff; }
+.quake-btn small { display: block; color: var(--muted); }
+.qmag { flex: none; min-width: 46px; text-align: center; font-weight: 700; font-size: 0.82rem; padding: 3px 6px; border-radius: 999px; background: #334155; }
+
+.legend i.qdot { width: 12px; height: 12px; border-radius: 50%; background: rgba(148, 163, 184, 0.35); border: 1.5px solid #94a3b8; }
+.legend i.qdot.now { background: rgba(239, 68, 68, 0.6); border-color: #fecaca; }
+.legend i.ramp.wide { width: 100%; height: 10px; margin: 0; }
+.ramp-row { display: block; }
+.ramp-scale { display: flex; justify-content: space-between; color: var(--muted); }
+
+.tl-track { position: relative; }
+.tl-quakes { position: absolute; left: 8px; right: 8px; top: calc(100% - 3px); height: 0; pointer-events: none; }
+.tl-quakes i { position: absolute; top: 0; width: 3px; margin-left: -1.5px; background: #ef4444; border-radius: 2px; }
